@@ -1,0 +1,45 @@
+.short-answer-dialog {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
+/* Row for fields */
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  width: 100%;
+}
+
+/* General form field */
+.form-field {
+  flex: 1 1 200px;
+}
+
+/* Weight field smaller max width */
+.weight-field {
+  max-width: 150px;
+  flex: 0 1 auto;
+}
+
+/* Full width field */
+.full-width {
+  flex: 1 1 100%;
+}
+
+/* Dialog actions spacing */
+.dialog-actions {
+  margin-top: 10px;
+}
+
+/* Responsive adjustment for small screens */
+@media (max-width: 600px) {
+  .row {
+    flex-direction: column;
+  }
+  .weight-field {
+    max-width: 100%;
+  }
+}

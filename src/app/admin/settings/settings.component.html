@@ -1,0 +1,429 @@
+<div class="settings-container">
+  <div class="page-header">
+    <h1 class="page-title">
+      <mat-icon class="title-icon">settings</mat-icon>
+      Settings
+    </h1>
+    <p class="page-subtitle">Manage users, permissions, and account settings</p>
+  </div>
+
+  <mat-tab-group class="settings-tabs" animationDuration="300ms">
+    
+    <!-- Add User Tab -->
+    <mat-tab *ngIf="canCreateUser">
+      <ng-template mat-tab-label>
+        <mat-icon class="tab-icon">person_add</mat-icon>
+        Add User
+      </ng-template>
+      
+      <mat-card class="section-card">
+        <mat-card-header>
+          <mat-card-title>Create New User</mat-card-title>
+          <mat-card-subtitle>Add a new user to the system with appropriate permissions</mat-card-subtitle>
+        </mat-card-header>
+        
+        <mat-card-content>
+          <form [formGroup]="userForm" (ngSubmit)="onSubmit()" class="user-form">
+            
+            <!-- Basic Information Section -->
+            <div class="form-section">
+              <h3 class="section-title">
+                <mat-icon>person</mat-icon>
+                Basic Information
+              </h3>
+              
+              <div class="form-grid">
+                <mat-form-field appearance="outline" class="form-field">
+                  <mat-label>ID Number</mat-label>
+                  <input matInput formControlName="idNo" placeholder="Enter ID number" />
+                  <mat-icon matSuffix>badge</mat-icon>
+                  <mat-error *ngIf="userForm.get('idNo')?.hasError('required')">ID Number is required</mat-error>
+                  <mat-error *ngIf="userForm.get('idNo')?.hasError('pattern')">Please enter a valid ID number</mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="form-field">
+                  <mat-label>First Name</mat-label>
+                  <input matInput formControlName="first_name" placeholder="Enter first name" />
+                  <mat-icon matSuffix>person</mat-icon>
+                  <mat-error *ngIf="userForm.get('first_name')?.hasError('required')">First name is required</mat-error>
+                  <mat-error *ngIf="userForm.get('first_name')?.hasError('minlength')">Minimum 2 characters required</mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="form-field">
+                  <mat-label>Middle Name</mat-label>
+                  <input matInput formControlName="middle_name" placeholder="Enter middle name (optional)" />
+                  <mat-icon matSuffix>person</mat-icon>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="form-field">
+                  <mat-label>Last Name</mat-label>
+                  <input matInput formControlName="last_name" placeholder="Enter last name" />
+                  <mat-icon matSuffix>person</mat-icon>
+                  <mat-error *ngIf="userForm.get('last_name')?.hasError('required')">Last name is required</mat-error>
+                  <mat-error *ngIf="userForm.get('last_name')?.hasError('minlength')">Minimum 2 characters required</mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="form-field">
+                  <mat-label>Designation</mat-label>
+                  <input matInput formControlName="designation" placeholder="Enter designation (optional)" />
+                  <mat-icon matSuffix>work</mat-icon>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="form-field">
+                  <mat-label>Phone</mat-label>
+                  <input matInput formControlName="phone" placeholder="Enter phone number (optional)" />
+                  <mat-icon matSuffix>phone</mat-icon>
+                  <mat-error *ngIf="userForm.get('phone')?.hasError('pattern')">Please enter a valid phone number</mat-error>
+                </mat-form-field>
+                <div class="form-section">
+                  <h3 class="section-title">
+                    <mat-icon>image</mat-icon>
+                    Profile Picture
+                  </h3>
+
+                  <input type="file" accept="image/*" (change)="onFileSelected($event)" />
+                  
+                  <!-- Optional: preview -->
+                  <div *ngIf="selectedAvatar" class="avatar-preview">
+                    <img [src]="selectedAvatarPreview" alt="Avatar Preview" width="100" />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Security Section -->
+            <mat-divider></mat-divider>
+            
+            <div class="form-section">
+              <h3 class="section-title">
+                <mat-icon>security</mat-icon>
+                Security
+              </h3>
+              
+              <mat-form-field appearance="outline" class="password-field">
+                <mat-label>Password</mat-label>
+                <input matInput [type]="hideUserPassword ? 'password' : 'text'" 
+                       formControlName="password" 
+                       placeholder="Enter secure password" />
+                <button mat-icon-button matSuffix type="button" 
+                        (click)="hideUserPassword = !hideUserPassword"
+                        [attr.aria-label]="'Hide password'"
+                        matTooltip="Toggle password visibility">
+                  <mat-icon>{{ hideUserPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+                </button>
+                <mat-error>{{ getPasswordErrorMessage('password') }}</mat-error>
+                <mat-hint>Password must be at least 12 characters with uppercase, lowercase, number, and special character</mat-hint>
+              </mat-form-field>
+            </div>
+
+            <!-- Permissions Section -->
+            <mat-divider></mat-divider>
+            
+            <div class="form-section">
+              <h3 class="section-title">
+                <mat-icon>admin_panel_settings</mat-icon>
+                Permissions
+              </h3>
+              
+              <div class="permissions-grid">
+                <mat-checkbox *ngFor="let permission of availablePermissions" 
+                              [value]="permission.value"
+                              (change)="toggleNewUserPermission($event, permission.value)"
+                              class="permission-checkbox">
+                  <div class="permission-item">
+                    <mat-icon class="permission-icon">{{ permission.icon }}</mat-icon>
+                    <span>{{ permission.label }}</span>
+                  </div>
+                </mat-checkbox>
+              </div>
+            </div>
+
+            <mat-card-actions class="form-actions">
+              <button mat-raised-button color="primary" 
+                      [disabled]="userForm.invalid"
+                      class="submit-btn">
+                <mat-icon>person_add</mat-icon>
+                Create User
+              </button>
+              <button mat-stroked-button type="button" 
+                      (click)="userForm.reset(); newUserPermissions = []"
+                      class="reset-btn">
+                <mat-icon>refresh</mat-icon>
+                Reset Form
+              </button>
+            </mat-card-actions>
+          </form>
+        </mat-card-content>
+      </mat-card>
+    </mat-tab>
+
+    <!-- Change Password Tab -->
+    <mat-tab *ngIf="canChangePassword">
+      <ng-template mat-tab-label>
+        <mat-icon class="tab-icon">lock</mat-icon>
+        Change Password
+      </ng-template>
+      
+      <mat-card class="section-card">
+        <mat-card-header>
+          <mat-card-title>Change Password</mat-card-title>
+          <mat-card-subtitle>Update your account password for better security</mat-card-subtitle>
+        </mat-card-header>
+        
+        <mat-card-content>
+          <form [formGroup]="passwordForm" (ngSubmit)="onChangePassword()" class="password-form">
+            
+            <div class="password-fields">
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>Current Password</mat-label>
+                <input matInput [type]="hideOld1 ? 'password' : 'text'" 
+                       formControlName="oldPassword1" 
+                       placeholder="Enter current password" />
+                <button mat-icon-button matSuffix type="button" 
+                        (click)="hideOld1 = !hideOld1"
+                        matTooltip="Toggle password visibility">
+                  <mat-icon>{{ hideOld1 ? 'visibility_off' : 'visibility' }}</mat-icon>
+                </button>
+                <mat-error *ngIf="passwordForm.get('oldPassword1')?.hasError('required')">Current password is required</mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>Confirm Current Password</mat-label>
+                <input matInput [type]="hideOld2 ? 'password' : 'text'" 
+                       formControlName="oldPassword2" 
+                       placeholder="Re-enter current password" />
+                <button mat-icon-button matSuffix type="button" 
+                        (click)="hideOld2 = !hideOld2"
+                        matTooltip="Toggle password visibility">
+                  <mat-icon>{{ hideOld2 ? 'visibility_off' : 'visibility' }}</mat-icon>
+                </button>
+                <mat-error *ngIf="passwordForm.get('oldPassword2')?.hasError('required')">Please confirm current password</mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>New Password</mat-label>
+                <input matInput [type]="hideNew ? 'password' : 'text'" 
+                       formControlName="newPassword" 
+                       placeholder="Enter new password" />
+                <button mat-icon-button matSuffix type="button" 
+                        (click)="hideNew = !hideNew"
+                        matTooltip="Toggle password visibility">
+                  <mat-icon>{{ hideNew ? 'visibility_off' : 'visibility' }}</mat-icon>
+                </button>
+                <mat-error>{{ getPasswordErrorMessage('newPassword') }}</mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>Confirm New Password</mat-label>
+                <input matInput [type]="hideConfirm ? 'password' : 'text'" 
+                       formControlName="confirmPassword" 
+                       placeholder="Confirm new password" />
+                <button mat-icon-button matSuffix type="button" 
+                        (click)="hideConfirm = !hideConfirm"
+                        matTooltip="Toggle password visibility">
+                  <mat-icon>{{ hideConfirm ? 'visibility_off' : 'visibility' }}</mat-icon>
+                </button>
+                <mat-error>{{ getPasswordErrorMessage('confirmPassword') }}</mat-error>
+              </mat-form-field>
+            </div>
+
+            <mat-card-actions class="form-actions">
+              <button mat-raised-button color="primary" 
+                      [disabled]="passwordForm.invalid"
+                      class="submit-btn">
+                <mat-icon>lock</mat-icon>
+                Update Password
+              </button>
+            </mat-card-actions>
+          </form>
+        </mat-card-content>
+      </mat-card>
+    </mat-tab>
+
+    <!-- Permissions Tab -->
+    <mat-tab *ngIf="canChangePermissions">
+      <ng-template mat-tab-label>
+        <mat-icon class="tab-icon">admin_panel_settings</mat-icon>
+        My Permissions
+      </ng-template>
+      
+      <mat-card class="section-card">
+        <mat-card-header>
+          <mat-card-title>My Permissions</mat-card-title>
+          <mat-card-subtitle>Manage your account permissions</mat-card-subtitle>
+        </mat-card-header>
+        
+        <mat-card-content>
+          <div class="permissions-section">
+            <div class="permissions-grid">
+              <mat-checkbox *ngFor="let permission of availablePermissions" 
+                            [checked]="selectedPermissions.includes(permission.value)"
+                            (change)="toggleMyPermission($event, permission.value)"
+                            class="permission-checkbox">
+                <div class="permission-item">
+                  <mat-icon class="permission-icon">{{ permission.icon }}</mat-icon>
+                  <span>{{ permission.label }}</span>
+                </div>
+              </mat-checkbox>
+            </div>
+            
+            <mat-card-actions class="form-actions">
+              <button mat-raised-button color="primary" 
+                      (click)="updatePermissions()"
+                      class="submit-btn">
+                <mat-icon>save</mat-icon>
+                Save Permissions
+              </button>
+            </mat-card-actions>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </mat-tab>
+
+    <!-- All Users Tab -->
+    <mat-tab *ngIf="canAccessUsers">
+      <ng-template mat-tab-label>
+        <mat-icon class="tab-icon">group</mat-icon>
+        All Users
+      </ng-template>
+      
+      <mat-card class="section-card">
+        <mat-card-header>
+          <mat-card-title>User Management</mat-card-title>
+          <mat-card-subtitle>View and manage all system users</mat-card-subtitle>
+        </mat-card-header>
+        
+        <mat-card-content>
+          <div class="table-container">
+            <table mat-table [dataSource]="dataSource" class="users-table">
+              
+              <!-- ID Number Column -->
+              <ng-container matColumnDef="idNumber">
+                <th mat-header-cell *matHeaderCellDef class="table-header">ID Number</th>
+                <td mat-cell *matCellDef="let user" class="table-cell">
+                  <div class="cell-content">
+                    <mat-icon class="cell-icon">badge</mat-icon>
+                    {{ user.id_number }}
+                  </div>
+                </td>
+              </ng-container>
+
+              <!-- Name Column -->
+              <ng-container matColumnDef="name">
+                <th mat-header-cell *matHeaderCellDef class="table-header">Full Name</th>
+                <td mat-cell *matCellDef="let user" class="table-cell">
+                  <div class="user-info">
+                    <div class="avatar">
+                    <img *ngIf="user.avatar; else defaultAvatar"
+                        [src]="API_URL + '/' + user.avatar"
+                        alt="Avatar"
+                        class="user-avatar"/>
+                    <ng-template #defaultAvatar>
+                      <mat-icon>person</mat-icon>
+                    </ng-template>
+                    </div>
+                    <div class="user-details">
+                      <div class="user-name">
+                        {{ user.first_name }} {{ user.middle_name }} {{ user.last_name }}
+                      </div>
+                    </div>
+                  </div>
+                </td>
+              </ng-container>
+
+              <!-- Designation Column -->
+              <ng-container matColumnDef="designation">
+                <th mat-header-cell *matHeaderCellDef class="table-header">Designation</th>
+                <td mat-cell *matCellDef="let user" class="table-cell">
+                  <div class="cell-content" *ngIf="user.designation; else noDesignation">
+                    <mat-icon class="cell-icon">work</mat-icon>
+                    {{ user.designation }}
+                  </div>
+                  <ng-template #noDesignation>
+                    <span class="no-data">-</span>
+                  </ng-template>
+                </td>
+              </ng-container>
+
+              <!-- Phone Column -->
+              <ng-container matColumnDef="phone">
+                <th mat-header-cell *matHeaderCellDef class="table-header">Phone</th>
+                <td mat-cell *matCellDef="let user" class="table-cell">
+                  <div class="cell-content" *ngIf="user.phone; else noPhone">
+                    <mat-icon class="cell-icon">phone</mat-icon>
+                    {{ user.phone }}
+                  </div>
+                  <ng-template #noPhone>
+                    <span class="no-data">-</span>
+                  </ng-template>
+                </td>
+              </ng-container>
+
+              <!-- Permissions Column -->
+              <ng-container matColumnDef="permissions">
+                <th mat-header-cell *matHeaderCellDef class="table-header">Permissions</th>
+                <td mat-cell *matCellDef="let user" class="table-cell">
+                  <div class="permissions-chips">
+                    <mat-chip-listbox class="permissions-list">
+                      <mat-chip-option *ngFor="let permission of getUserPermissions(user); let i = index" 
+                                       [disabled]="true"
+                                       class="permission-chip"
+                                       [matTooltip]="getPermissionLabel(permission)">
+                        {{ getPermissionLabel(permission) }}
+                      </mat-chip-option>
+                    </mat-chip-listbox>
+                    <span *ngIf="getUserPermissions(user).length === 0" class="no-data">No permissions</span>
+                  </div>
+                </td>
+              </ng-container>
+
+              <!-- Actions Column -->
+              <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef class="table-header">Actions</th>
+                <td mat-cell *matCellDef="let user" class="table-cell">
+                  <button mat-icon-button color="primary" 
+                          (click)="onEditUser(user)"
+                          matTooltip="Edit user"
+                          class="action-btn">
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="table-row"></tr>
+            </table>
+
+            <mat-paginator #paginator
+                           [pageSize]="5"
+                           [pageSizeOptions]="[5, 10, 20]"
+                           showFirstLastButtons
+                           class="table-paginator">
+            </mat-paginator>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </mat-tab>
+
+    <!-- Assessment Management Tab -->
+    <mat-tab *ngIf="canAccessQuestionsManagement">
+      <ng-template mat-tab-label>
+        <mat-icon class="tab-icon">quiz</mat-icon>
+        Assessment Management
+      </ng-template>
+
+      <mat-card class="section-card">
+        <mat-card-header>
+          <mat-card-title>Assessment Builder</mat-card-title>
+          <mat-card-subtitle>Create and manage assessment questions</mat-card-subtitle>
+        </mat-card-header>
+
+        <mat-card-content>
+          <!-- Embed the new component -->
+          <app-assessment-builder></app-assessment-builder>
+        </mat-card-content>
+      </mat-card>
+    </mat-tab>
+
+  </mat-tab-group>
+</div>

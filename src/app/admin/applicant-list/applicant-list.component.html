@@ -1,0 +1,103 @@
+<div class="dashboard-toolbar">
+  <select class="dropdown-select" [(ngModel)]="selectedOption">
+    <option value="">All Scholarships</option>
+    <option value="Application for Quezon Science High School Exam">
+      Application for Quezon Science High School Exam
+    </option>
+    <option value="One Family One College Graduate Scholarship">
+      One Family One College Graduate Scholarship
+    </option>
+    <option value="Priority Courses Scholarship">
+      Priority Courses Scholarship
+    </option>
+    <option value="Stan C">Stan C</option>
+  </select>
+
+  <div class="toolbar-right">
+    <input 
+      type="text" 
+      placeholder="Search applicants..." 
+      class="search-bar" 
+      [(ngModel)]="searchText" 
+    />
+    <div class="current-date">{{ currentDate }}</div> 
+  </div>
+</div>
+
+<div class="applicants-container">
+  <div class="applicants-header">
+    <h2>Applicants</h2>
+
+    <mat-form-field appearance="outline" class="date-range-picker">
+      <mat-label>Filter by Date</mat-label>
+      <mat-date-range-input [rangePicker]="picker" [(ngModel)]="selectedDateRange">
+        <input matStartDate placeholder="Start date">
+        <input matEndDate placeholder="End date">
+      </mat-date-range-input>
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-date-range-picker #picker></mat-date-range-picker>
+    </mat-form-field>
+  </div>
+
+  <!-- Message when no applicants -->
+  <div class="no-applicants" *ngIf="filteredApplicants.length === 0">
+    <mat-icon>info</mat-icon>
+    <p>No applicants found.</p>
+  </div>
+
+  <!-- Applicants List -->
+  <mat-card 
+    class="applicant-card" 
+    *ngFor="let applicant of filteredApplicants | paginate: { itemsPerPage: itemsPerPage, currentPage: page }"
+    (click)="openPreview(applicant)"
+  >
+    <div class="applicant-row">
+      <img 
+        [src]="applicant.picture ? (apiUrl + applicant.picture) : 'assets/default-avatar.png'" 
+        alt="Applicant Picture"
+        class="applicant-picture"
+      />
+
+      <div class="applicant-info">
+        <div class="info-field">
+          <label>Applicant Reference No.</label>
+          <p>{{ applicant.application_ref_no }}</p>
+        </div>
+        <div class="info-field">
+          <label>Date</label>
+          <p>{{ applicant.created_at | date:'MM-dd-yyyy' }}</p>
+        </div>
+        <div class="info-field">
+          <label>Name</label>
+          <p>{{ applicant.name }}</p>
+        </div>
+        <div class="info-field">
+          <label>Scholarship Type</label>
+          <p>{{ applicant.scholarship_type }}</p>
+        </div>
+        <div class="info-field">
+          <label>Personal Assessment</label>
+        <p>{{ applicant.personal_assessment || '-' }}</p>
+        </div>
+         <div class="info-field">
+          <label>Recommending Assessment</label>
+            <p>
+              {{
+                applicant.recommending_assessment !== null
+                  ? (applicant.recommending_assessment | number:'1.2-2')
+                  : '-'
+              }}
+            </p>
+        </div>
+      </div>
+    </div>
+  </mat-card>
+
+  <!-- Pagination Controls -->
+  <pagination-controls 
+    *ngIf="filteredApplicants.length > 0"
+    (pageChange)="page = $event"
+    [autoHide]="true"
+    class="pagination-controls">
+  </pagination-controls>
+</div>

@@ -1,0 +1,206 @@
+/* === Wrapper === */
+.assessment-wrapper {
+  min-height: 100vh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  background: #f4f6f8; /* subtle light gray */
+  padding: 3rem 1rem;
+}
+
+/* === Card === */
+.assessment-card {
+  width: 100%;
+  max-width: 1100px;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 2.5rem;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+/* === Fade-in Animation === */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* === Header === */
+.assessment-card h2 {
+  font-size: 1.6rem;
+  color: #1d2d50;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+/* === Assessment Header === */
+.assessment-header {
+  display: flex;
+  justify-content: space-between;
+  background: #003366;
+  color: #fff;
+  border-radius: 8px 8px 0 0;
+  padding: 0.9rem 1.5rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+/* === Question Row === */
+.question-row {
+  display: flex;
+  border-bottom: 1px solid #e0e0e0;
+  transition: background 0.25s ease;
+}
+
+.question-row:hover {
+  background-color: #f1f5f9;
+}
+
+.left-side, .right-side {
+  flex: 1;
+  padding: 1.5rem 2rem;
+  position: relative;
+}
+
+.left-side {
+  border-right: 2px solid #e0e0e0;
+}
+
+/* === Labels === */
+.left-side::before,
+.right-side::before {
+  position: absolute;
+  top: 0.5rem;
+  right: 1rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  opacity: 0.7;
+}
+
+.left-side::before { content: "APPLICANT"; color: #6c757d; }
+.right-side::before { content: "ASSESSOR"; color: #003366; }
+
+/* === Question Text === */
+.left-side h6,
+.right-side h6 {
+  font-size: 1rem;
+  color: #1d2d50;
+  margin-bottom: 0.8rem;
+  line-height: 1.5;
+}
+
+/* === Form Options === */
+.form-check {
+  margin-bottom: 0.6rem;
+  margin-left: 1.25rem;
+  border-radius: 6px;
+  padding: 0.35rem 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.left-side .form-check.selected {
+  background-color: #d0e8d0;
+  border-left: 4px solid #28a745;
+}
+
+.form-check-input {
+  cursor: pointer;
+  width: 1.1rem;
+  height: 1.1rem;
+  accent-color: #003366;
+}
+
+.form-check-input:disabled { cursor: not-allowed; opacity: 0.65; }
+
+.form-check-label {
+  font-size: 0.95rem;
+  color: #495057;
+  cursor: pointer;
+  padding-left: 0.45rem;
+}
+
+.form-check-input:checked + .form-check-label {
+  font-weight: 600;
+  color: #003366;
+}
+
+.left-side .form-check-input:checked + .form-check-label {
+  color: #155724;
+}
+
+/* === Short Answer Inputs === */
+input.form-control {
+  border-radius: 6px;
+  border: 1px solid #ced4da;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.95rem;
+  color: #1d2d50;
+  width: 100%;
+}
+
+input.form-control:disabled {
+  background: #f8f9fa;
+}
+
+/* === Pagination === */
+.pagination-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 2rem 0 1.5rem;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.pagination-btn {
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  border: none;
+  background: #e5e7eb;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.pagination-btn:hover:not(:disabled) { background: #003366; color: white; }
+.pagination-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.page-info {
+  font-weight: 600;
+  color: #1d2d50;
+  margin: 0 1rem;
+}
+
+/* === Save Button === */
+.save-container { display: flex; justify-content: center; margin-top: 2rem; }
+.save-btn {
+  padding: 0.8rem 2.5rem;
+  border-radius: 8px;
+  background: #003366;
+  color: #fff;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 1px solid #002244;
+}
+
+.save-btn:hover { background: #002244; transform: translateY(-1px); }
+.save-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* === Responsive === */
+@media (max-width: 992px) {
+  .question-row { flex-direction: column; }
+  .left-side { border-right: none; border-bottom: 1px dashed #dee2e6; }
+  .left-side, .right-side { padding: 1.25rem 1rem; }
+  .form-check-label { font-size: 0.9rem; }
+}
+
+@media (max-width: 576px) {
+  .assessment-card { padding: 1.25rem; }
+  h2 { font-size: 1.25rem; }
+  .btn { width: 100%; padding: 0.7rem; font-size: 0.95rem; }
+}

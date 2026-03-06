@@ -1,0 +1,139 @@
+<app-applicant-header></app-applicant-header>
+
+<div class="page-wrapper">
+  <div class="container-centered">
+
+    <!-- Scholarship Info Card -->
+    <div class="scholarship-header">
+      <div class="header-content">
+        <div class="header-icon-title">
+          <i class="fas fa-graduation-cap"></i>
+          <h1>Assessment Form</h1>
+        </div>
+        <p class="reference-number">Reference No: {{ applicationRefNo }}</p>
+      </div>
+    </div>
+
+    <!-- Top Pagination -->
+    <div class="pagination-container" *ngIf="totalPages > 1">
+      <button type="button" class="pagination-btn" (click)="prevPage()" [disabled]="currentPage === 1">
+        ← Previous
+      </button>
+
+      <span class="page-info">
+        Page {{ currentPage }} of {{ totalPages }}
+      </span>
+
+      <button type="button" class="pagination-btn" (click)="nextPage()" [disabled]="currentPage === totalPages">
+        Next →
+      </button>
+    </div>
+
+    <!-- Assessment Header Card -->
+    <div class="assessment-header-card">
+      <div class="assessment-header-content">
+        <div class="header-title">
+          <i class="fas fa-clipboard-check"></i>
+          <h2>Assessment Form</h2>
+        </div>
+        <p class="subtitle">Please answer all questions honestly and completely.</p>
+
+        <!-- Progress Bar -->
+        <div class="progress-container">
+          <div class="progress-stats">
+            <span>{{ getAnsweredCount() }} / {{ questions.length }} answered</span>
+            <span>{{ progressPercent | number:'1.0-1' }}%</span>
+          </div>
+          <div class="progress-bar-wrapper">
+            <div class="progress-bar-fill"
+                [style.width.%]="progressPercent">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Assessment Questions -->
+    <form (ngSubmit)="onSubmit()" #assessmentForm="ngForm">
+
+      <div *ngFor="let question of paginatedQuestions; trackBy: trackById" class="question-card">
+        <div class="question-content">
+
+          <!-- Question Header -->
+          <div class="question-header">
+            <div class="question-title-wrapper">
+              <span class="question-badge">{{ question.id }}</span>
+              <h3 class="question-text">{{ question.question }}</h3>
+            </div>
+          </div>
+
+          <!-- Options -->
+          <div *ngIf="question.type === 'mcq'" class="answer-options">
+            <label *ngFor="let option of question.options; let j = index" class="option-label" [class.selected]="question.selectedAnswer === option" [for]="question.id + '_' + j">
+              <input type="radio" [name]="'question_' + question.id" [id]="question.id + '_' + j" [value]="option"
+                     [checked]="question.selectedAnswer === option" (change)="onAnswerChange(question.id, option)">
+              <span class="option-text">{{ option }}</span>
+            </label>
+          </div>
+
+          <div *ngIf="question.type === 'short'" class="short-answer-container">
+            <label class="short-answer-label" [for]="'short_' + question.id">
+              Your Answer
+            </label>
+            <input 
+              type="text"
+              [id]="'short_' + question.id"
+              [value]="question.selectedAnswer"
+              (input)="onShortAnswerChange(question.id, $event)"
+              class="short-answer-input"
+              placeholder="Type your answer here..."
+              maxlength="250"
+            />
+          </div>
+
+          <!-- Status Indicator -->
+          <div class="status-indicator">
+            <span *ngIf="question.selectedAnswer?.trim()" class="status-answered">
+              <i class="fas fa-check-circle"></i> Answered
+            </span>
+            <span *ngIf="!question.selectedAnswer?.trim()" class="status-unanswered">
+              <i class="fas fa-circle"></i> Not answered
+            </span>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Bottom Pagination -->
+      <div class="pagination-container" *ngIf="totalPages > 1">
+        <button type="button" class="pagination-btn" (click)="prevPage()" [disabled]="currentPage === 1">← Previous</button>
+        <span class="page-info">Page {{ currentPage }} of {{ totalPages }}</span>
+        <button type="button" class="pagination-btn" (click)="nextPage()" [disabled]="currentPage === totalPages">Next →</button>
+      </div>
+
+      <!-- Submit Section -->
+      <div class="submit-section" *ngIf="currentPage === totalPages">
+        <div class="submit-content">
+          <div *ngIf="!isFormValid()" class="alert alert-warning">
+            <i class="fas fa-exclamation-triangle"></i>
+            <p>Please answer all questions before submitting your assessment.</p>
+          </div>
+
+          <div *ngIf="isFormValid()" class="alert alert-success">
+            <i class="fas fa-check-circle"></i>
+            <p>All questions completed! Ready to submit.</p>
+          </div>
+
+          <button type="submit" class="submit-button" [class.active]="isFormValid()" [disabled]="!isFormValid()">
+            <i class="fas fa-paper-plane"></i> Submit Assessment
+          </button>
+
+          <p class="disclaimer">
+            By submitting this form, you confirm that all information provided is accurate and complete.
+          </p>
+        </div>
+      </div>
+
+    </form>
+  </div>
+</div>

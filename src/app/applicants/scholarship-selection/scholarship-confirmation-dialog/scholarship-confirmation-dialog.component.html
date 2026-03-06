@@ -1,0 +1,29 @@
+<h2 mat-dialog-title class="dialog-title">
+  Confirm Scholarship Application
+</h2>
+
+<mat-divider></mat-divider>
+
+<mat-dialog-content class="dialog-content">
+  <p class="subtitle">
+    You are about to apply for the following scholarship:
+  </p>
+
+  <div class="scholarship-card">
+    <div>
+      <div class="label">Selected Program:</div>
+      <div class="title">{{ data.title }}</div>
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end" class="dialog-actions">
+  <button mat-button class="cancel-btn" (click)="cancel()">
+    Cancel
+  </button>
+
+  <button mat-raised-button color="primary" class="confirm-btn" (click)="confirm()">
+    <mat-icon>check_circle</mat-icon>
+    Confirm Application
+  </button>
+</mat-dialog-actions>

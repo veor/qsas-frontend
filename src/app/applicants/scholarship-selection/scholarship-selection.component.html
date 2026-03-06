@@ -1,0 +1,47 @@
+<app-applicant-header></app-applicant-header>
+
+<div class="scholarship-selection-container">
+  <!-- Main Content -->
+  <main class="main-content">
+    <!-- Instruction Labels -->
+    <div class="instruction-text">
+      <p>You can apply to more than (1) scholarship program once.</p>
+      <p>You can close this page once you're done selecting a scholarship program.</p>
+    </div>
+    <div class="scholarships-grid">
+      <div 
+        class="scholarship-card" 
+        *ngFor="let scholarship of scholarships"
+        (click)="!isAlreadyApplied(scholarship) && selectScholarship(scholarship)"
+        [class.already-applied]="isAlreadyApplied(scholarship)"
+      >
+        <div class="card-header">
+            <!-- add image later  -->
+        </div>
+        
+        <div class="card-body">
+          <h3>{{ scholarship.title }}</h3>
+          <div class="deadline">Deadline: {{ scholarship.deadline }}</div>
+          <div class="requirements">
+            <h4>Requirements:</h4>
+            <ul>
+              <li *ngFor="let requirement of scholarship.requirements">
+                {{ requirement }}
+              </li>
+            </ul>
+          </div>
+        </div>
+        
+        <div class="card-footer">
+          <button 
+            class="apply-btn" 
+            [disabled]="isAlreadyApplied(scholarship)"
+            [class.applied]="isAlreadyApplied(scholarship)"
+          >
+            {{ isAlreadyApplied(scholarship) ? 'Already Applied' : 'Apply Now' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>

@@ -1,0 +1,68 @@
+.dialog-title {
+  font-weight: 600;
+  font-size: 20px;
+  color: #222;
+  border-bottom: 1px solid #eee;
+
+  padding: 20px 24px 12px 24px;
+  margin: 0;
+}
+
+
+.edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.section {
+  background: #fafafa;
+  border-radius: 10px;
+  padding: 20px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  border: 1px solid #eee;
+}
+
+.section h3 {
+  grid-column: 1 / -1;
+  margin: 0 0 10px 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: #ff5400;
+}
+
+.full-width {
+  grid-column: 1 / -1;
+}
+
+.upload-box {
+  border: 2px dashed #ddd;
+  border-radius: 8px;
+  padding: 18px;
+  background: #fff;
+  text-align: center;
+  transition: 0.2s;
+}
+
+.upload-box:hover {
+  border-color: #ff5400;
+}
+
+.dialog-actions {
+  border-top: 1px solid #eee;
+  padding-top: 15px;
+}
+
+button[mat-raised-button] {
+  background-color: #ff5400 !important;
+  color: white !important;
+  font-weight: 600;
+  border-radius: 6px;
+  padding: 6px 18px;
+}
+
+button[mat-raised-button]:hover {
+  background-color: #e64800 !important;
+}

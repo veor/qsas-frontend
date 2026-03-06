@@ -1,0 +1,123 @@
+<div class="dialog-header">
+  <div class="header-content">
+    <div class="header-text">
+      <h2 mat-dialog-title>Personal Preview</h2>
+      <p class="dialog-subtitle">
+        This is a reminder to review and confirm the information you provided in the form. 
+        Please double-check all the details you've entered to ensure accuracy.
+      </p>
+    </div>
+
+    <div class="header-picture" *ngIf="getImageSrc(); else noImage">
+      <img [src]="getImageSrc()" alt="Applicant Picture" />
+    </div>
+    <ng-template #noImage>
+      <p>No picture uploaded</p>
+    </ng-template>
+  </div>
+</div>
+
+
+<mat-dialog-content class="dialog-content">
+  <!-- Applicant Information -->
+  <div class="section">
+    <h3><mat-icon>person</mat-icon> Applicant Information</h3>
+    <div class="info-grid">
+      <div class="info-item">
+        <label>Full Name:</label>
+        <span>{{getFullName('applicant')}}</span>
+      </div>
+      <div class="info-item">
+        <label>Birthdate:</label>
+        <span>{{formatDate(data.birthdate)}}</span>
+      </div>
+      <div class="info-item">
+        <label>Gender:</label>
+        <span>{{data.gender}}</span>
+      </div>
+      <div class="info-item">
+        <label>Civil Status:</label>
+        <span>{{data.civil_status}}</span>
+      </div>
+      <div class="info-item" *ngIf="data.children > 0">
+        <label>Number of Children:</label>
+        <span>{{data.children}}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Parents Information -->
+  <div class="section" *ngIf="getFullName('father') || getFullName('mother')">
+    <h3><mat-icon>family_restroom</mat-icon> Parents Information</h3>
+    <div class="info-grid">
+      <div class="info-item" *ngIf="getFullName('father')">
+        <label>Father's Name:</label>
+        <span>{{getFullName('father')}}</span>
+      </div>
+      <div class="info-item" *ngIf="getFullName('mother')">
+        <label>Mother's Name:</label>
+        <span>{{getFullName('mother')}}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contact Information -->
+  <div class="section">
+    <h3><mat-icon>contact_phone</mat-icon> Contact Information</h3>
+    <div class="info-grid">
+      <div class="info-item">
+        <label>Email:</label>
+        <span>{{data.email}}</span>
+      </div>
+      <div class="info-item">
+        <label>Contact Number:</label>
+        <span>{{data.contact}}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Address Information -->
+  <div class="section">
+    <h3><mat-icon>location_on</mat-icon> Address</h3>
+    <div class="info-grid">
+      <div class="info-item full-width">
+        <label>Complete Address:</label>
+        <span>{{getCompleteAddress()}}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Security Information -->
+  <!-- <div class="section">
+    <h3><mat-icon>security</mat-icon> Security Information</h3>
+    <div class="info-grid">
+      <div class="info-item">
+        <label>Secret Question:</label>
+        <span>{{data.secret_question}}</span>
+      </div>
+      <div class="info-item">
+        <label>Secret Answer:</label>
+        <span>{{data.secret_answer}}</span>
+      </div>
+    </div>
+  </div> -->
+</mat-dialog-content>
+
+<mat-dialog-actions class="dialog-actions">
+  <mat-checkbox [(ngModel)]="consentGiven" color="primary" class="consent-checkbox">
+    I hereby give my consent under the <b>Data Privacy Act of 2012</b>. I understand that my
+    personal information will be collected for the purpose of processing my application, and may
+    be used only for official and lawful purposes.
+  </mat-checkbox>
+
+  <div class="actions-buttons">
+    <button mat-button class="btn btn-secondary" (click)="onCancel()">
+      <mat-icon>edit</mat-icon>
+      Edit Information
+    </button>
+    <button mat-button class="btn btn-primary" (click)="onConfirm()" [disabled]="!consentGiven">
+      <mat-icon>send</mat-icon>
+      Submit Application
+    </button>
+  </div>
+</mat-dialog-actions>

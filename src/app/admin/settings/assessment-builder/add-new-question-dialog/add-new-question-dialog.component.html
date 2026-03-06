@@ -1,0 +1,40 @@
+<h2 mat-dialog-title>Add New Question</h2>
+
+<mat-dialog-content>
+  <mat-form-field appearance="outline" class="full">
+    <mat-label>Question Code</mat-label>
+    <input matInput [(ngModel)]="question_code">
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="full">
+    <mat-label>Question</mat-label>
+    <textarea matInput rows="3" [(ngModel)]="question"></textarea>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="full">
+    <mat-label>Weight Grade</mat-label>
+    <input matInput type="number" min="0" step="0.01" [(ngModel)]="weight">
+  </mat-form-field>
+
+  <div *ngFor="let opt of options; let i = index" class="option-row">
+
+    <mat-form-field appearance="outline" class="option-text">
+      <mat-label>Option {{ i + 1 }}</mat-label>
+      <input matInput [(ngModel)]="opt.text">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="option-points">
+      <mat-label>Points</mat-label>
+      <input matInput type="number" min="0" [(ngModel)]="opt.points">
+    </mat-form-field>
+
+  </div>
+
+  <button mat-button (click)="addOption()">+ Add Option</button>
+
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Cancel</button>
+  <button mat-raised-button color="primary" (click)="save()">Save</button>
+</mat-dialog-actions>

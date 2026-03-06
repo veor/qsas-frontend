@@ -1,0 +1,116 @@
+<div *ngIf="questions.length === 0">No questions found.</div>
+
+<div *ngIf="questions.length > 0" class="table-container">
+  <div class="mat-elevation-z8">
+    <div class="table-toolbar">
+      <div class="table-controls">
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>Filter Questions</mat-label>
+          <mat-select (selectionChange)="applyFilter($event.value)">
+            <mat-option value="all">All Questions</mat-option>
+            <mat-option value="active">Active Only</mat-option>
+            <mat-option value="inactive">Inactive Only</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <button mat-raised-button color="primary" class="add-question-btn" (click)="addQuestion()">
+          <mat-icon>add</mat-icon>
+          Add Question
+        </button>
+      </div>
+    </div>
+
+    <table mat-table [dataSource]="dataSource">
+
+      <!-- Expand Column -->
+      <ng-container matColumnDef="expand">
+        <th mat-header-cell *matHeaderCellDef style="width: 48px;"></th>
+        <td mat-cell *matCellDef="let q">
+          <button mat-icon-button (click)="toggleRow(q); $event.stopPropagation()">
+            <mat-icon>{{ expandedElement === q ? 'expand_less' : 'expand_more' }}</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <!-- ID Column -->
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef style="width: 100px;">ID</th>
+        <td mat-cell *matCellDef="let q">{{ q.id }}</td>
+      </ng-container>
+
+      <!-- Question Column -->
+      <ng-container matColumnDef="question">
+        <th mat-header-cell *matHeaderCellDef>Question</th>
+        <td mat-cell *matCellDef="let q">
+          <div>{{ q.question }}</div>
+          <!-- Inline expanded content -->
+          <div class="expanded-detail" *ngIf="expandedElement === q" [@detailExpand]="'expanded'">
+            <div class="options-container">
+              <h4>Assessment Options:</h4>
+              <ul class="options-list">
+                <li *ngFor="let option of q.options; let i = index" class="option-item">
+                  <span class="option-number">{{ i + 1 }}.</span>
+                  <span class="option-text">{{ option.text }}</span>
+                  <span class="option-points">— {{ option.points }} pts</span>
+                </li>
+              </ul>
+              <div *ngIf="!q.options || q.options.length === 0" class="no-options">
+                No options available for this question.
+              </div>
+            </div>
+          </div>
+        </td>
+      </ng-container>
+      
+      <!-- Status Column  -->
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef>Status</th>
+        <td mat-cell *matCellDef="let q">
+          <span
+            class="status-badge"
+            [class.active]="q.is_active === 1"
+            [class.inactive]="q.is_active === 0">
+            {{ q.is_active === 1 ? 'Active' : 'Inactive' }}
+          </span>
+        </td>
+      </ng-container>
+
+      <!-- Actions Column -->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef style="width: 120px;">Actions</th>
+        <td mat-cell *matCellDef="let q">
+          <button mat-icon-button color="primary" matTooltip="Edit" (click)="editQuestion(q, $event)">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button
+                [color]="q.is_active === 1 ? 'warn' : 'accent'"
+                matTooltip="{{ q.is_active === 1 ? 'Deactivate' : 'Activate' }}"
+                (click)="confirmStatusChange(q, q.is_active === 1 ? 0 : 1, $event)">
+          <mat-icon>
+            {{ q.is_active === 1 ? 'toggle_off' : 'toggle_on' }}
+          </mat-icon>
+        </button>
+
+        </td>
+      </ng-container>
+
+      <!-- Header and Row -->
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;" 
+          class="row-item"
+          [class.expanded-row]="expandedElement === row"
+          (click)="toggleRow(row)">
+      </tr>
+
+    </table>
+
+    <mat-paginator 
+      #paginator
+      [length]="dataSource.data.length"
+      [pageSize]="10"
+      [pageSizeOptions]="[5, 10, 20, 50]"
+      showFirstLastButtons
+      aria-label="Select page of questions">
+    </mat-paginator>
+  </div>
+</div>

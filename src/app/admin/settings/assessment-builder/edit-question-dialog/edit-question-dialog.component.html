@@ -1,0 +1,93 @@
+  <h2 mat-dialog-title>Edit Question</h2>
+      
+      <mat-dialog-content>
+        <form [formGroup]="questionForm">
+          
+          <!-- Question ID (Read-only) -->
+          <br>
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Question ID</mat-label>
+            <input matInput formControlName="id" readonly>
+          </mat-form-field>
+
+          <!-- Question Text -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Question</mat-label>
+            <textarea 
+              matInput 
+              formControlName="question" 
+              rows="3"
+              placeholder="Enter your question here"></textarea>
+            <mat-error *ngIf="questionForm.get('question')?.hasError('required')">
+              Question is required
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Weight Grade</mat-label>
+            <input matInput type="number" formControlName="weight" min="0" step="0.01">
+          </mat-form-field>
+
+          <!-- Options Section -->
+          <div class="options-section">
+            <div class="options-header">
+              <h3>Options</h3>
+              <button 
+                mat-mini-fab 
+                color="primary" 
+                type="button"
+                (click)="addOption()"
+                matTooltip="Add new option">
+                <mat-icon>add</mat-icon>
+              </button>
+            </div>
+
+            <div formArrayName="options" class="options-list">
+              <div
+                *ngFor="let option of options.controls; let i = index"
+                class="option-item"
+                [formGroupName]="i"
+              >
+                <span class="option-number">{{ i + 1 }}.</span>
+
+                <mat-form-field appearance="outline" class="option-field">
+                  <mat-label>Option</mat-label>
+                  <input matInput formControlName="text">
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="points-field">
+                  <mat-label>Points</mat-label>
+                  <input matInput type="number" formControlName="points" min="0">
+                </mat-form-field>
+
+                <button
+                  mat-icon-button
+                  color="warn"
+                  type="button"
+                  (click)="removeOption(i)"
+                  [disabled]="options.length <= 2">
+                  <mat-icon>delete</mat-icon>
+                </button>
+
+              </div>
+            </div>
+
+            <div *ngIf="options.length < 2" class="warning-message">
+              <mat-icon>warning</mat-icon>
+              At least 2 options are required
+            </div>
+          </div>
+
+        </form>
+      </mat-dialog-content>
+
+      <mat-dialog-actions align="end">
+        <button mat-button (click)="onCancel()">Cancel</button>
+        <button 
+          mat-raised-button 
+          color="primary" 
+          (click)="onSave()"
+          [disabled]="!questionForm.valid || options.length < 2">
+          Save Changes
+        </button>
+      </mat-dialog-actions>

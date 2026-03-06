@@ -1,0 +1,304 @@
+  <div class="dialog-container">
+    <!-- Header Section -->
+    <div class="dialog-header">
+      <div class="header-content">
+        <div class="avatar-section">
+          <img 
+            [src]="data.picture ? data.picture : 'assets/default-avatar.png'" 
+            alt="Applicant Picture"
+            class="applicant-avatar"
+          />
+        </div>
+        <div class="header-info">
+          <h2 class="applicant-name">{{ data.name }}</h2>
+          <p class="application-ref">Application Ref: {{ data.application_ref_no || 'N/A' }}</p>
+        </div>
+      </div>
+      <button mat-icon-button mat-dialog-close class="close-button">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+
+    <!-- Content Section -->
+    <div class="dialog-content">
+      <!-- Scholarship Information Card -->
+      <mat-card class="info-card">
+        <mat-card-header>
+          <mat-card-title>Scholarship Information</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="info-grid">
+            <div class="info-item">
+              <span class="label">Scholarship Type</span>
+              <span class="value">{{ data.scholarship_type || 'Not specified' }}</span>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Personal Information Card -->
+      <mat-card class="info-card">
+        <mat-card-header>
+          <mat-card-title>Personal Information</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="info-grid">
+            <div class="info-item">
+              <span class="label">Birthdate</span>
+              <span class="value">{{ data.birthdate | date:'longDate' }}</span>
+            </div>
+            <div class="info-item">
+              <span class="label">Gender</span>
+              <span class="value">{{ data.gender }}</span>
+            </div>
+            <div class="info-item">
+              <span class="label">Civil Status</span>
+              <span class="value">{{ data.civil_status }}</span>
+            </div>
+            <div class="info-item">
+              <span class="label">Number of Children</span>
+              <span class="value">{{ data.no_of_children || '0' }}</span>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Family Information Card -->
+      <mat-card class="info-card">
+        <mat-card-header>
+          <mat-card-title>Family Information</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="info-grid">
+            <div class="info-item">
+              <span class="label">Father's Name</span>
+              <span class="value">{{ data.father_name }}</span>
+            </div>
+            <div class="info-item">
+              <span class="label">Mother's Name</span>
+              <span class="value">{{ data.mother_name }}</span>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Contact Information Card -->
+      <mat-card class="info-card">
+        <mat-card-header>
+          <mat-card-title>Contact Information</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="info-grid">
+            <div class="info-item full-width">
+              <span class="label">Mobile Number</span>
+              <span class="value">{{ data.mobile_number }}</span>
+            </div>
+            <div class="info-item full-width">
+              <span class="label">Email Address</span>
+              <span class="value">{{ data.email_address }}</span>
+            </div>
+            <div class="info-item full-width">
+              <span class="label">Address</span>
+              <span class="value">{{ data.address }}</span>
+            </div>
+            <!-- Geographical Location Details -->
+            <!-- View Mode -->
+            <ng-container *ngIf="!isEditingLocation">
+              <div class="info-item full-width">
+                <div class="geo-section">
+                  <div class="geo-header">
+                    <mat-icon class="geo-icon">place</mat-icon>
+                    <span class="geo-title">Geographical Details</span>
+                    <button type="button" class="geo-edit-btn" (click)="startEditLocation()">
+                      <mat-icon>edit</mat-icon> Edit
+                    </button>
+                  </div>
+                  <div class="geo-cards">
+                    <div class="geo-card">
+                      <div class="geo-card-body">
+                        <span class="geo-card-label">Hometown Location</span>
+                        <span class="geo-card-value">{{ data.hometown_location || '—' }}</span>
+                      </div>
+                    </div>
+                    <div class="geo-card">
+                      <div class="geo-card-body">
+                        <span class="geo-card-label">Barangay Accessibility</span>
+                        <span class="geo-card-value">{{ data.barangay_accessibility || '—' }}</span>
+                      </div>
+                    </div>
+                    <div class="geo-card">
+                      <div class="geo-card-body">
+                        <span class="geo-card-label">Hard-to-Reach Barangays</span>
+                        <span class="geo-card-value">{{ data.hard_to_reach_barangays || '—' }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </ng-container>
+
+            <!-- Edit Mode -->
+            <ng-container *ngIf="isEditingLocation">
+              <div class="info-item full-width">
+                <div class="geo-section geo-section--editing">
+                  <div class="geo-header">
+                    <mat-icon class="geo-icon">edit_location</mat-icon>
+                    <span class="geo-title">Edit Geographical Details</span>
+                  </div>
+                  <div class="geo-edit-fields">
+                    <div class="geo-edit-field">
+                      <label class="geo-edit-label">Hometown Location</label>
+                      <select class="geo-select" [(ngModel)]="editableLocation.hometown_location">
+                        <option value="" disabled>Select option</option>
+                        <option *ngFor="let opt of hometownLocationOptions" [value]="opt.value">{{ opt.value }}</option>
+                      </select>
+                    </div>
+                    <div class="geo-edit-field">
+                      <label class="geo-edit-label">Barangay Accessibility</label>
+                      <select class="geo-select" [(ngModel)]="editableLocation.barangay_accessibility">
+                        <option value="" disabled>Select option</option>
+                        <option *ngFor="let opt of barangayAccessibilityOptions" [value]="opt.value">{{ opt.value }}</option>
+                      </select>
+                    </div>
+                    <div class="geo-edit-field">
+                      <label class="geo-edit-label">Hard-to-Reach Barangays</label>
+                      <select class="geo-select" [(ngModel)]="editableLocation.hard_to_reach_barangays">
+                        <option value="" disabled>Select option</option>
+                        <option *ngFor="let opt of hardToReachOptions" [value]="opt.value">{{ opt.value }}</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="geo-edit-actions">
+                    <button type="button" class="geo-btn geo-btn--primary" (click)="saveLocation()">
+                      <mat-icon>check</mat-icon> Save Changes
+                    </button>
+                    <button type="button" class="geo-btn geo-btn--secondary" (click)="cancelEditLocation()">
+                      <mat-icon>close</mat-icon> Cancel
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </ng-container>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Grades Card -->
+      <mat-card class="info-card">
+        <mat-card-header>
+          <mat-card-title>Last Known Average Grade / GWA</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+
+          <!-- View Mode -->
+          <ng-container *ngIf="!isEditingGrades">
+            <div class="grade-section">
+              <div class="grade-header">
+                <mat-icon class="grade-icon">school</mat-icon>
+                <span class="grade-title">Academic Grade Record</span>
+                <button type="button" class="grade-edit-btn" (click)="startEditGrades()">
+                  <mat-icon>edit</mat-icon> Edit
+                </button>
+              </div>
+
+              <ng-container *ngIf="data.grades && data.grades.length > 0; else noGrades">
+                <div class="grade-display-row" *ngFor="let grade of data.grades; let i = index">
+                  <div class="grade-badge">
+                    <span class="grade-badge-value">{{ grade.numeric_grade }}</span>
+                    <span class="grade-badge-label">pts</span>
+                  </div>
+                  <div class="grade-range-info">
+                    <span class="grade-range-label">Grade Range</span>
+                    <span class="grade-range-value">{{ grade.grade_label }}</span>
+                  </div>
+                </div>
+              </ng-container>
+
+              <ng-template #noGrades>
+                <div class="grade-empty">
+                  <mat-icon>inbox</mat-icon>
+                  <span>No grades submitted</span>
+                </div>
+              </ng-template>
+            </div>
+          </ng-container>
+
+          <!-- Edit Mode -->
+          <ng-container *ngIf="isEditingGrades">
+            <div class="grade-section grade-section--editing">
+              <div class="grade-header">
+                <mat-icon class="grade-icon">edit</mat-icon>
+                <span class="grade-title">Edit Grade Record</span>
+              </div>
+
+              <div class="grade-edit-row" *ngFor="let grade of editableGrades; let i = index">
+                <label class="grade-edit-label">Grade Range</label>
+                <select
+                  class="grade-select"
+                  [value]="grade.numeric_grade"
+                  (change)="onGradeSelect($any($event.target).value, i)">
+                  <option value="">Select Grade Range</option>
+                  <option *ngFor="let g of gradesOptions" [value]="g.value">{{ g.label }}</option>
+                </select>
+              </div>
+
+              <div class="grade-edit-actions">
+                <button type="button" class="geo-btn geo-btn--primary" (click)="saveGrades()">
+                  <mat-icon>check</mat-icon> Save Changes
+                </button>
+                <button type="button" class="geo-btn geo-btn--secondary" (click)="cancelEditGrades()">
+                  <mat-icon>close</mat-icon> Cancel
+                </button>
+              </div>
+            </div>
+          </ng-container>
+
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Documents Card -->
+      <mat-card class="info-card">
+        <mat-card-header>
+          <mat-card-title>Documents Submitted</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="info-grid">
+            <div class="info-item full-width">
+              <span class="label">Grade PDF</span>
+              <span class="value">
+                <ng-container *ngIf="data.grade_pdf; else noPdf">
+                  <iframe
+                    [src]="data.grade_pdf | safeUrl"
+                    width="100%"
+                    height="500px"
+                    style="border:1px solid #ccc; border-radius: 4px;"
+                  ></iframe>
+                </ng-container>
+                <ng-template #noPdf>
+                  <em>No Grade PDF submitted</em>
+                </ng-template>
+              </span>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Actions Section -->
+    <div class="dialog-actions">
+      <button mat-button mat-dialog-close color="warn" class="action-button secondary">
+        <mat-icon>close</mat-icon>
+        Close
+      </button>
+      <button 
+        mat-raised-button 
+        color="primary" 
+        class="action-button primary"
+        (click)="onViewAssessment()"  
+        *ngIf="canViewAssessment"
+      >
+        <mat-icon>assessment</mat-icon>
+        View Assessment
+      </button>
+    </div>
+  </div>

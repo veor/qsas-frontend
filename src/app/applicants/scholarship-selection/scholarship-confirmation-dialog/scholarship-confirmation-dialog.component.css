@@ -1,0 +1,93 @@
+.dialog-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 20px;
+  font-weight: 600;
+  margin-left: 20px;
+}
+
+.dialog-content {
+  padding-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.subtitle {
+  margin: 0;
+  color: #666;
+  font-size: 14px;
+}
+
+.scholarship-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  border-radius: 12px;
+  background-color: #f5f7fa;
+  border: 1px solid #e0e0e0;
+}
+
+.scholarship-icon {
+  font-size: 36px;
+  color: #3f51b5;
+}
+
+.label {
+  font-size: 12px;
+  text-transform: uppercase;
+  color: #888;
+  letter-spacing: 0.5px;
+}
+
+.title {
+  font-size: 16px;
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+.dialog-actions {
+  padding: 16px 24px 24px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.dialog-actions button {
+  min-width: 130px;
+  height: 40px;
+  border-radius: 8px;
+  font-weight: 500;
+  text-transform: none; 
+}
+
+.cancel-btn {
+  color: #555;
+  border: none;
+}
+
+.cancel-btn:hover {
+    color: white;
+  background-color: #9191b4;
+}
+
+.confirm-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #14967f;
+  color: white;
+  border: none;
+}
+
+.confirm-btn:hover {
+  background-color: #303944;
+}
+
+.confirm-btn mat-icon {
+  font-size: 18px;
+  height: 18px;
+  width: 18px;
+}

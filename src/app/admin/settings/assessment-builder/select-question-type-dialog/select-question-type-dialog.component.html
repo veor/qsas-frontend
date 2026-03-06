@@ -1,0 +1,33 @@
+<h2 mat-dialog-title class="dialog-title">
+  Select Question Type
+</h2>
+
+<mat-dialog-content class="type-container">
+
+  <div class="type-card ripple" (click)="select('mcq')">
+    <span class="ripple-effect"></span>
+
+    <mat-icon class="type-icon">list</mat-icon>
+    <div class="type-text">
+      <h3>Multiple Choice</h3>
+      <p>Use when applicants select from predefined answers</p>
+    </div>
+  </div>
+
+  <div class="type-card ripple" (click)="select('short')">
+    <span class="ripple-effect"></span>
+
+    <mat-icon class="type-icon">short_text</mat-icon>
+    <div class="type-text">
+      <h3>Short Answer</h3>
+      <p>Use when applicants provide written responses</p>
+    </div>
+  </div>
+
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close class="cancel-btn">
+    Cancel
+  </button>
+</mat-dialog-actions>

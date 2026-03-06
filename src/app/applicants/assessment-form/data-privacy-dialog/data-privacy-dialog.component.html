@@ -1,0 +1,44 @@
+<h2 class="dialog-title">Data Privacy Notice</h2>
+
+<div class="dialog-content">
+  <p>
+    The Provincial Government of Quezon (PGQ), in line with the Data Privacy Act of 2012,
+    is committed to protect and secure personal information obtained in the process
+    of performance of its mandate.
+  </p>
+
+  <p>
+    The personal information you provided electronically herein will be processed and
+    utilized solely for documentation, facilitation of future transactions, profiling
+    or for reportorial requirements/compliance to governmental rules and regulations.
+  </p>
+
+  <p>
+    Collected personal information will be kept/stored and accessed only by authorized
+    PGQ personnel and will not be shared with any outside parties unless written consent
+    is secured.
+  </p>
+
+  <p>
+    Information will be stored electronically or physically for one (1) year after which
+    physical records shall be disposed or destroyed following the disposition process
+    provided by the National Archives of the Philippines and/or the National Privacy Commission.
+  </p>
+
+  <p class="instruction">
+    Should you wish that your personal information be processed in connection with the
+    above-mentioned program, please tick <strong>"I CONCUR"</strong> to proceed.
+  </p>
+
+  <div class="consent-options">
+    <label>
+      <input type="checkbox" [(ngModel)]="concur">
+      <strong>I CONCUR</strong>
+    </label>
+  </div>
+</div>
+
+<div class="dialog-actions">
+  <button class="btn cancel" (click)="cancel()">I DO NOT CONCUR</button>
+  <button class="btn confirm" [disabled]="!concur" (click)="proceed()">Proceed</button>
+</div>

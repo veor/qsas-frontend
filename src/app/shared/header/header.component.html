@@ -1,0 +1,49 @@
+<header class="header">
+  <img 
+    src="assets/images/QSAS-Logo.png" 
+    alt="QSAS Logo" 
+    class="logo" 
+    routerLink="/admin/dashboard"
+  />
+
+  <div class="user-info" (click)="toggleDropdown()" tabindex="0">
+    <span>{{ currentUser?.name }}</span>
+    <img 
+      *ngIf="currentUser?.avatar; else defaultAvatar"
+      [src]="backendUrl + '/' + currentUser.avatar"
+      alt="User Avatar"
+      class="profile-img"
+    />
+    <ng-template #defaultAvatar>
+      <img src="assets/images/profile.png" alt="Profile" class="profile-img" />
+    </ng-template>
+
+    <!-- Dropdown menu -->
+    <div class="dropdown-menu" *ngIf="showDropdown">
+      <a 
+        *ngIf="authService.hasPermission('dashboard.access')" 
+        class="dropdown-item" 
+        routerLink="/admin/dashboard"
+      >
+        Dashboard
+      </a>
+
+      <a 
+        *ngIf="authService.hasPermission('applicantList.access')" 
+        class="dropdown-item" 
+        routerLink="/admin/applicantList"
+      >
+        Applicants
+      </a>
+
+      <!-- Settings: always visible -->
+      <a 
+      class="dropdown-item" 
+      routerLink="/admin/settings"
+      >Settings</a>
+
+      <!-- Logout always visible -->
+      <button class="dropdown-item" (click)="logout()">Logout</button>
+    </div>
+  </div>
+</header>

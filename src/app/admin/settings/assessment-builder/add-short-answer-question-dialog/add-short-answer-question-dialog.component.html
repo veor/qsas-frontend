@@ -1,0 +1,29 @@
+<h2 mat-dialog-title>Add Short Answer Question</h2>
+
+<mat-dialog-content class="short-answer-dialog">
+
+  <div class="row">
+    <mat-form-field appearance="outline" class="form-field">
+      <mat-label>Question Code</mat-label>
+      <input matInput [(ngModel)]="question_code" placeholder="Enter unique question code">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="form-field weight-field">
+      <mat-label>Weight Grade</mat-label>
+      <input matInput type="number" min="0" step="0.01" [(ngModel)]="weight" placeholder="0.00">
+    </mat-form-field>
+  </div>
+
+  <div class="row">
+    <mat-form-field appearance="outline" class="form-field full-width">
+      <mat-label>Question</mat-label>
+      <textarea matInput rows="4" [(ngModel)]="question" placeholder="Enter your question here"></textarea>
+    </mat-form-field>
+  </div>
+
+</mat-dialog-content>
+
+<mat-dialog-actions align="end" class="dialog-actions">
+  <button mat-button mat-dialog-close>Cancel</button>
+  <button mat-raised-button color="primary" (click)="save()">Save</button>
+</mat-dialog-actions>

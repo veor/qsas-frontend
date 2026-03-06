@@ -1,0 +1,41 @@
+.option-row {
+  display: flex;
+  gap: 12px;
+}
+
+.option-text {
+  flex: 3;
+}
+
+.option-points {
+  flex: 1;
+}
+
+mat-dialog-content mat-form-field.full {
+  width: 100%;
+}
+
+mat-dialog-content button {
+  margin-top: 8px;
+}
+
+@media (max-width: 600px) {
+  mat-dialog-content {
+    padding: 16px 12px;
+  }
+
+  mat-dialog-actions {
+    flex-direction: column-reverse;
+    gap: 8px;
+  }
+
+  mat-dialog-actions button {
+    width: 100%;
+  }
+}
+
+/* For larger screens, limit dialog max width */
+:host ::ng-deep .mat-dialog-container {
+  max-width: 600px;
+  width: 90%;
+}

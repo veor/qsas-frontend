@@ -1,0 +1,267 @@
+<div class="dialog-container">
+  
+  <!-- Dialog Header -->
+  <div class="dialog-header">
+    <div class="header-content">
+      <div class="header-info">
+        <div class="user-avatar">
+          <mat-icon>person</mat-icon>
+        </div>
+        <div class="header-text">
+          <h2 mat-dialog-title class="dialog-title">Edit User</h2>
+          <p class="dialog-subtitle">{{ data.first_name }} {{ data.last_name }}</p>
+        </div>
+      </div>
+      <button mat-icon-button (click)="onCancel()" class="close-btn" matTooltip="Close">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <!-- Dialog Content -->
+  <div mat-dialog-content class="dialog-content">
+    <form [formGroup]="editForm" class="edit-user-form">
+      
+      <!-- Basic Information Section -->
+      <div class="form-section">
+        <div class="section-header">
+          <mat-icon class="section-icon">person</mat-icon>
+          <h3 class="section-title">Basic Information</h3>
+        </div>
+        
+        <div class="form-grid">
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>First Name</mat-label>
+            <input matInput formControlName="first_name" placeholder="Enter first name">
+            <mat-icon matSuffix>person</mat-icon>
+            <mat-error>{{ getFormFieldErrorMessage('first_name') }}</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Middle Name</mat-label>
+            <input matInput formControlName="middle_name" placeholder="Enter middle name (optional)">
+            <mat-icon matSuffix>person</mat-icon>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Last Name</mat-label>
+            <input matInput formControlName="last_name" placeholder="Enter last name">
+            <mat-icon matSuffix>person</mat-icon>
+            <mat-error>{{ getFormFieldErrorMessage('last_name') }}</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Designation</mat-label>
+            <input matInput formControlName="designation" placeholder="Enter designation (optional)">
+            <mat-icon matSuffix>work</mat-icon>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Phone</mat-label>
+            <input matInput formControlName="phone" placeholder="Enter phone number (optional)">
+            <mat-icon matSuffix>phone</mat-icon>
+            <mat-error>{{ getFormFieldErrorMessage('phone') }}</mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+
+<!-- Avatar Section -->
+<div class="form-section">
+  <div class="section-header">
+    <mat-icon class="section-icon">photo_camera</mat-icon>
+    <h3 class="section-title">Profile Avatar</h3>
+  </div>
+
+  <div class="avatar-upload">
+    <img
+      *ngIf="avatarPreview; else defaultAvatar"
+      [src]="avatarPreview"
+      alt="Avatar Preview"
+      class="avatar-img"
+    />
+    <ng-template #defaultAvatar>
+      <img
+        [src]="data.avatar ? backendUrl + '/' + data.avatar : 'assets/images/profile.png'"
+        alt="Current Avatar"
+        class="avatar-img"
+      />
+    </ng-template>
+
+    <input type="file" (change)="onAvatarSelected($event)" accept="image/*" />
+  </div>
+</div>
+
+
+      <mat-divider class="section-divider"></mat-divider>
+
+      <!-- Permissions Section -->
+      <div class="form-section" *ngIf="canChangeUserPermissions">
+        <div class="section-header">
+          <mat-icon class="section-icon">admin_panel_settings</mat-icon>
+          <div class="section-title-group">
+            <h3 class="section-title">Permissions</h3>
+            <div class="permission-counter">
+              <mat-icon class="counter-icon">check_circle</mat-icon>
+              <span>{{ getSelectedPermissionsCount() }} of {{ getTotalPermissionsCount() }} permissions selected</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="permissions-container">
+          <div *ngFor="let category of getPermissionsByCategory() | keyvalue" class="permission-category">
+            <h4 class="category-title">
+              <mat-icon class="category-icon">folder</mat-icon>
+              {{ category.key }}
+            </h4>
+            
+            <div class="permissions-grid">
+              <div *ngFor="let permission of category.value" class="permission-card">
+                <mat-checkbox
+                  [checked]="selectedPermissions.includes(permission.value)"
+                  (change)="togglePermission($event, permission.value)"
+                  class="permission-checkbox">
+                  
+                  <div class="permission-content">
+                    <div class="permission-header">
+                      <mat-icon class="permission-icon">{{ permission.icon }}</mat-icon>
+                      <span class="permission-label">{{ permission.label }}</span>
+                    </div>
+                    <p class="permission-description">{{ permission.description }}</p>
+                  </div>
+                </mat-checkbox>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <mat-divider class="section-divider"></mat-divider>
+
+      <!-- Password Section -->
+      <div class="form-section" *ngIf="canChangeUserPassword">
+        <div class="section-header">
+          <mat-icon class="section-icon">lock</mat-icon>
+          <div class="section-title-group">
+            <h3 class="section-title">Security Settings</h3>
+            <button mat-button 
+                    type="button" 
+                    (click)="togglePasswordFields()" 
+                    class="toggle-password-btn"
+                    [color]="showPasswordFields ? 'warn' : 'primary'">
+              <mat-icon>{{ showPasswordFields ? 'visibility_off' : 'lock_reset' }}</mat-icon>
+              {{ showPasswordFields ? 'Cancel Password Change' : 'Change Password' }}
+            </button>
+          </div>
+        </div>
+
+        <div *ngIf="showPasswordFields" class="password-section">
+          <div class="password-info">
+            <mat-icon class="info-icon">info</mat-icon>
+            <span>Leave password fields empty to keep the current password unchanged</span>
+          </div>
+
+          <div class="password-fields">
+            <mat-form-field appearance="outline" class="password-field">
+              <mat-label>New Password</mat-label>
+              <input matInput 
+                     [type]="hideNewPassword ? 'password' : 'text'" 
+                     formControlName="newPassword" 
+                     placeholder="Enter new password"
+                     (input)="onPasswordInput()">
+              <button mat-icon-button 
+                      matSuffix 
+                      type="button" 
+                      (click)="hideNewPassword = !hideNewPassword"
+                      matTooltip="Toggle password visibility">
+                <mat-icon>{{ hideNewPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+              </button>
+              <mat-error>{{ getPasswordErrorMessage() }}</mat-error>
+            </mat-form-field>
+
+            <div *ngIf="passwordStrengthText" class="password-strength">
+              <div class="strength-label">
+                <span>Password Strength: </span>
+                <span class="strength-text" [style.color]="passwordStrengthColor">{{ passwordStrengthText }}</span>
+              </div>
+              <mat-progress-bar 
+                mode="determinate" 
+                [value]="passwordStrength" 
+                [color]="passwordStrength < 50 ? 'warn' : 'primary'"
+                class="strength-bar">
+              </mat-progress-bar>
+            </div>
+
+            <mat-form-field appearance="outline" class="password-field">
+              <mat-label>Confirm New Password</mat-label>
+              <input matInput 
+                     [type]="hideConfirmPassword ? 'password' : 'text'" 
+                     formControlName="confirmPassword" 
+                     placeholder="Confirm new password">
+              <button mat-icon-button 
+                      matSuffix 
+                      type="button" 
+                      (click)="hideConfirmPassword = !hideConfirmPassword"
+                      matTooltip="Toggle password visibility">
+                <mat-icon>{{ hideConfirmPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+              </button>
+              <mat-error>{{ getPasswordErrorMessage() }}</mat-error>
+            </mat-form-field>
+          </div>
+
+          <div class="password-requirements">
+            <h4 class="requirements-title">
+              <mat-icon>checklist</mat-icon>
+              Password Requirements
+            </h4>
+            <ul class="requirements-list">
+              <li class="requirement-item">
+                <mat-icon class="requirement-icon">check_circle</mat-icon>
+                At least 12 characters long
+              </li>
+              <li class="requirement-item">
+                <mat-icon class="requirement-icon">check_circle</mat-icon>
+                Contains uppercase letters (A-Z)
+              </li>
+              <li class="requirement-item">
+                <mat-icon class="requirement-icon">check_circle</mat-icon>
+                Contains lowercase letters (a-z)
+              </li>
+              <li class="requirement-item">
+                <mat-icon class="requirement-icon">check_circle</mat-icon>
+                Contains numbers (0-9)
+              </li>
+              <li class="requirement-item">
+                <mat-icon class="requirement-icon">check_circle</mat-icon>
+                Contains special characters (!&#64;#$%^&*)
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <!-- Dialog Actions -->
+  <div mat-dialog-actions class="dialog-actions">
+    <div class="action-info">
+      <mat-icon class="info-icon">info</mat-icon>
+      <span class="info-text">Changes will be applied only for the next log in</span>
+    </div>
+    
+    <div class="action-buttons">
+      <button mat-stroked-button (click)="onCancel()" class="cancel-btn">
+        <mat-icon>close</mat-icon>
+        Cancel
+      </button>
+      
+      <button mat-raised-button 
+              color="primary" 
+              (click)="onSave()" 
+              [disabled]="editForm.invalid || !isPasswordValid()"
+              class="save-btn">
+        <mat-icon>save</mat-icon>
+        Save Changes
+      </button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,362 @@
+<app-applicant-header></app-applicant-header>
+
+<div class="application-form-container">
+  <div class="back-navigation">
+    <button class="back-btn" (click)="goBackToHome()">
+      ← Back to Home Page
+    </button>
+  </div>
+  <mat-horizontal-stepper #stepper linear>
+    <!-- Step 1: Basic Information -->
+    <mat-step [stepControl]="basicInfoForm">
+      <form [formGroup]="basicInfoForm">
+        <ng-template matStepLabel>Basic Information</ng-template>
+        
+        <div class="form-container">
+          <h3>Applicant's Name</h3>
+          <div class="form-grid">
+            <div class="form-field">
+              <label>First Name *</label>
+              <input formControlName="applicant_first" placeholder="Enter first name">
+              <div class="error" *ngIf="basicInfoForm.get('applicant_first')?.touched && basicInfoForm.get('applicant_first')?.invalid">
+                First name is required.
+              </div>
+            </div>
+            <div class="form-field">
+              <label>Middle Name</label>
+              <input formControlName="applicant_middle" placeholder="Enter middle name">
+            </div>
+            <div class="form-field">
+              <label>Last Name *</label>
+              <input formControlName="applicant_last" placeholder="Enter last name">
+              <div class="error" *ngIf="basicInfoForm.get('applicant_last')?.touched && basicInfoForm.get('applicant_last')?.invalid">
+                Last name is required.
+              </div>
+            </div>
+            <div class="form-field">
+              <label>Name Extension</label>
+                <select formControlName="applicant_extension">
+                  <option value="">None</option>
+                  <option value="Jr.">Jr.</option>
+                  <option value="Sr.">Sr.</option>
+                  <option value="II">II</option>
+                  <option value="III">III</option>
+                  <option value="IV">IV</option>
+                </select>
+            </div>
+          </div>
+
+          <h3>Father's Name</h3>
+          <div class="form-grid">
+            <div class="form-field">
+              <label>First Name</label>
+              <input formControlName="father_first" placeholder="Enter first name">
+              <div class="error" *ngIf="basicInfoForm.get('father_first')?.touched && basicInfoForm.get('father_first')?.invalid">
+                First name is required.
+              </div>
+            </div>
+            <div class="form-field">
+              <label>Middle Name</label>
+              <input formControlName="father_middle" placeholder="Enter middle name">
+            </div>
+            <div class="form-field">
+              <label>Last Name</label>
+              <input formControlName="father_last" placeholder="Enter last name">
+              <div class="error" *ngIf="basicInfoForm.get('father_last')?.touched && basicInfoForm.get('father_last')?.invalid">
+                Last name is required.
+              </div>
+            </div>
+            <div class="form-field">
+              <label>Name Extension</label>
+                <select formControlName="father_extension">
+                  <option value="">None</option>
+                  <option value="Jr.">Jr.</option>
+                  <option value="Sr.">Sr.</option>
+                  <option value="II">II</option>
+                  <option value="III">III</option>
+                  <option value="IV">IV</option>
+                </select>
+            </div>
+          </div>
+
+          <h3>Mother's Name</h3>
+          <div class="form-grid">
+            <div class="form-field">
+              <label>First Name</label>
+              <input formControlName="mother_first" placeholder="Enter first name">
+              <div class="error" *ngIf="basicInfoForm.get('mother_first')?.touched && basicInfoForm.get('mother_first')?.invalid">
+                First name is required.
+              </div>
+            </div>
+            <div class="form-field">
+              <label>Middle Name</label>
+              <input formControlName="mother_middle" placeholder="Enter middle name">
+            </div>
+            <div class="form-field">
+              <label>Last Name</label>
+              <input formControlName="mother_last" placeholder="Enter last name">
+              <div class="error" *ngIf="basicInfoForm.get('mother_last')?.touched && basicInfoForm.get('mother_last')?.invalid">
+                Last name is required.
+              </div>
+            </div>
+            <div class="form-field">
+              <label>Name Extension</label>
+                <select formControlName="mother_extension">
+                  <option value="">None</option>
+                  <option value="Jr.">Jr.</option>
+                  <option value="Sr.">Sr.</option>
+                  <option value="II">II</option>
+                  <option value="III">III</option>
+                  <option value="IV">IV</option>
+                </select>
+            </div>
+          </div>
+
+          <h3>Personal Information</h3>
+          <div class="form-grid">
+            <div class="form-field">
+              <label>Birthdate *</label>
+              <input type="date" formControlName="birthdate">
+              <div class="error" *ngIf="basicInfoForm.get('birthdate')?.touched && basicInfoForm.get('birthdate')?.invalid">
+                Birthdate is required.
+              </div>
+            </div>
+          </div>
+
+          <div class="button-container">
+            <button mat-button class="btn btn-primary" (click)="goNext(stepper)">Next</button>
+          </div>
+        </div>
+      </form>
+    </mat-step>
+
+    <!-- Step 2: Other Personal Details -->
+    <mat-step [stepControl]="otherDetailsForm">
+      <form [formGroup]="otherDetailsForm">
+        <ng-template matStepLabel>Other Personal Details</ng-template>
+        
+        <div class="form-container">
+          <h3>Personal Background:</h3>
+          <div class="form-grid">
+            <div class="form-field">
+              <label>Sex</label>
+              <select formControlName="assigned_sex">
+                <option value="">Select</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label>Desired Gender *</label>
+              <select formControlName="gender">
+                <option value="">Select Gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="LGBTQ+">LGBTQ+</option>
+                <option value="Prefer not to say">Prefer not to say</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label>Marital Status *</label>
+              <select formControlName="civil_status">
+                <option value="">Select Status</option>
+                <option value="Single">Single</option>
+                <option value="Married">Married (Kasal)</option>
+                <option value="Separated">Separated</option>
+                <option value="Cohabiting">Cohabiting</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label>Number of Children</label>
+              <select formControlName="children">
+                <option value="0">0</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="More than 3">More than 3</option>
+              </select>
+            </div>
+          </div>
+
+          <h3>Contact Information:</h3>
+          <div class="form-grid">
+            <div class="form-field">
+              <label>Contact Number *</label>
+              <input formControlName="contact" placeholder="Enter contact number">
+            </div>
+            <div class="form-field">
+              <label>Email Address *</label>
+              <input formControlName="email" placeholder="Enter email address" type="email">
+            </div>
+          </div>
+
+          <h3>Address:</h3>
+          <div class="form-grid">
+            <div class="form-field">
+              <label>House Number</label>
+              <input formControlName="house_no" placeholder="Enter house number">
+            </div>
+            <div class="form-field">
+              <label>Street</label>
+              <input formControlName="street" placeholder="Enter street">
+            </div>
+            <div class="form-field">
+              <label>Purok / Subdivision</label>
+              <input formControlName="purok" placeholder="Enter purok/subdivision">
+            </div>
+            <div class="form-field">
+              <label>Congressional District *</label>
+                <select formControlName="district">
+                  <option value="">Select District</option>
+                  <option *ngFor="let d of districts" [value]="d.id">{{ d.name }}</option>
+                </select>
+            </div>
+            <div class="form-field">
+              <label>Municipality *</label>
+              <select formControlName="municipality">
+                <option value="">Select municipality</option>
+                <option *ngFor="let m of filteredMunicipalities" [value]="m.id">
+                  {{ m.name }}
+                </option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label>Barangay *</label>
+              <input formControlName="barangay" placeholder="Enter barangay">
+              <div class="error" *ngIf="otherDetailsForm.get('barangay')?.touched && otherDetailsForm.get('barangay')?.invalid">
+                Barangay is required.
+              </div>
+              <i class="note">Reminder: Answer in Caps and Lowercase.</i>
+            </div>
+            <!-- Geographical Location  -->
+            <div class="form-field full-width radio-question">
+              <label>Which of the following best describe the location of your hometown? *</label>
+              <div class="radio-options">
+                <label *ngFor="let option of hometownLocationOptions" class="radio-label">
+                  <input type="radio" [value]="option.value" formControlName="hometown_location">
+                  <span class="radio-custom"></span>
+                  {{ option.value }}
+                </label>
+              </div>
+              <div class="error" *ngIf="otherDetailsForm.get('hometown_location')?.touched && otherDetailsForm.get('hometown_location')?.invalid">
+                Please select one location.
+              </div>
+            </div>
+            <div class="form-field full-width radio-question">
+              <label>How accessible is your barangay? *</label>
+              <div class="radio-options">
+                <label *ngFor="let option of BarangayAccessibilityOptions" class="radio-label">
+                  <input type="radio" [value]="option.value" formControlName="barangay_accessibility">
+                  <span class="radio-custom"></span>
+                  {{ option.value }}
+                </label>
+              </div>
+              <div class="error" *ngIf="otherDetailsForm.get('barangay_accessibility')?.touched && otherDetailsForm.get('barangay_accessibility')?.invalid">
+                Please select one option.
+              </div>
+            </div>
+            <div class="form-field full-width radio-question">
+              <label>Are there geographically isolated and disadvantaged (hard to reach) barangays in your hometown? *</label>
+              <div class="radio-options">
+                <label *ngFor="let option of hardToReachBarangaysOptions" class="radio-label">
+                  <input type="radio" [value]="option.value" formControlName="hard_to_reach_barangays">
+                  <span class="radio-custom"></span>
+                  {{ option.value }}
+                </label>
+              </div>
+              <div class="error" *ngIf="otherDetailsForm.get('hard_to_reach_barangays')?.touched && otherDetailsForm.get('hard_to_reach_barangays')?.invalid">
+                Please select one option.
+              </div>
+            </div>
+          </div>
+
+          <h3>Applicant's Academic Background:</h3>
+          <div class="form-grid">
+            <div class="form-field">
+              <label>Current Academic Status</label>
+              <select formControlName="current_academic_status">
+                <option value="1">Graduating Senior High School Student</option>
+                <option value="2">Graduate of Senior High School</option>
+                <option value="3">First Year</option>
+                <option value="4">Second Year</option>
+                <option value="5">Third Year</option>
+                <option value="6">Fourth Year (of a Five-Year Course)</option>
+                <option value="7">Fourth Year (Graduating Student)</option>
+                <option value="8">Fifth Year (Graduating Student)</option>
+              </select>
+            </div>
+            <!-- if not senior high school  -->
+            <div class="form-field" *ngIf="!isSeniorHighSelected()">
+              <label>Current Course</label>
+              <input formControlName="current_course" placeholder="Enter current course">
+            </div>
+            <!-- make it dropdown with free input courses  -->
+            <div class="form-field">
+              <label>Target Courses in College</label>
+              <input formControlName="applicant_course" placeholder="Enter course">
+            </div>
+            <!-- make it dropdown with free input schools  -->
+            <div class="form-field">
+              <label>Current School</label>
+              <input formControlName="current_school" placeholder="Enter current school">
+            </div>
+          </div>
+          <h3>Reckoning Academic Period:</h3>
+          <!-- Academic Period Labels -->
+          <div class="academic-period-label">
+            <p><strong>School Year:</strong> 20yy to 20yy</p>
+              <strong>Grading Period</strong>
+              <p>Highschool - 1st Quarter, 2nd Quarter, 3rd Quarter, 4th Quarter</p>
+              <p>College - 1st Semester/Trimester, 2nd Semester/Trimester, Summer Semester/3rd Trimester</p>
+          </div>
+          <div formArrayName="grades">
+          <div [formGroupName]="0" class="form-grid">
+            <div class="form-field">
+              <label>Grade *</label>
+              <select formControlName="numeric_grade" (change)="onGradeSelect($any($event.target).value, 0)">
+                <option value="">Select Grade Range</option>
+                <option *ngFor="let g of gradesOptions" [value]="g.value">
+                  {{ g.label }}
+                </option>
+              </select>
+              <div class="error" *ngIf="grades.at(0).get('numeric_grade')?.touched && grades.at(0).get('numeric_grade')?.invalid">
+                Grade is required.
+              </div>
+            </div>
+          </div>
+        </div>
+          <h3>Security Questions</h3>
+          <div class="form-grid">
+            <div class="form-field">
+              <label>Secret Question *</label>
+              <input formControlName="secret_question" placeholder="Enter your secret question">
+            </div>
+            <div class="form-field">
+              <label>Answer *</label>
+              <input formControlName="secret_answer" placeholder="Enter your answer">
+              <i class="note">Reminder: Please make sure you save/write your secret answer.</i>
+            </div>
+        </div>
+
+          <h3>Documents</h3>  
+          <div class="form-grid">
+          <div class="form-field">
+            <label>Upload Picture (2x2 photo with white background) *</label>
+            <input type="file" formControlName="picture" accept="image/*" (change)="onFileSelected($event)">
+          </div>
+            <div class="form-field">
+              <label>Upload Proof of Latest Grade or Academic Standing:</label>
+              <input type="file" formControlName="grade_pdf" accept=".pdf" (change)="onGradeFileSelected($event)">
+                <i class="note">Reminder: Must be a PDF file.</i>
+            </div>
+          </div>
+
+          <div class="button-container">
+            <button mat-button class="btn btn-secondary" matStepperPrevious>Back</button>
+            <button mat-button class="btn btn-primary" (click)="submitInformation()">Submit Information</button>
+          </div>
+        </div>
+      </form>
+    </mat-step>
+  </mat-horizontal-stepper>
+</div>

@@ -1,0 +1,155 @@
+<div class="assessment-wrapper">
+  <div class="assessment-card shadow-lg">
+    <h2 class="text-center text-primary fw-bold mb-4">
+      Assessment Review (Ref No: {{ applicationRefNo }})
+    </h2>
+
+    <!-- Loading Spinner -->
+    <div *ngIf="isLoading" class="text-center py-5">
+      <div class="spinner-border text-primary"></div>
+      <p class="mt-2 text-muted">Loading assessment...</p>
+    </div>
+
+    <!-- Top Pagination -->
+    <div class="pagination-container top-pagination" *ngIf="totalPages > 1">
+      <button
+        type="button"
+        class="pagination-btn"
+        (click)="prevPage()"
+        [disabled]="currentPage === 1">
+        ← Previous
+      </button>
+
+      <span class="page-info">Page {{ currentPage }} of {{ totalPages }}</span>
+
+      <button
+        type="button"
+        class="pagination-btn"
+        (click)="nextPage()"
+        [disabled]="currentPage === totalPages">
+        Next →
+      </button>
+    </div>
+
+    <!-- Assessment Container -->
+    <div *ngIf="!isLoading" class="assessment-container">
+      <div class="assessment-header">
+        <div class="header-left">Applicant’s Answers</div>
+        <div class="header-right">Assessor’s Assessment</div>
+      </div>
+
+      <!-- Question Rows -->
+      <div *ngFor="let q of paginatedQuestions" class="question-row">
+
+        <!-- Left Side: Applicant's Answers -->
+        <div class="left-side">
+          <h6 class="fw-bold text-primary">{{ q.id }}. {{ q.question }}</h6>
+
+          <!-- MCQ Options -->
+          <div *ngIf="q.type === 'mcq'">
+            <div *ngFor="let option of q.options; let j = index" class="form-check">
+              <input
+                type="radio"
+                class="form-check-input"
+                [name]="'applicant_' + q.id"
+                [id]="'applicant_' + q.id + '_' + j"
+                [value]="option.text"
+                [checked]="q.selectedAnswer === option.text"
+                disabled
+              />
+              <label class="form-check-label" [for]="'applicant_' + q.id + '_' + j">
+                {{ option.text }}
+                <span class="text-muted">({{ option.points }} pts)</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Short Answer -->
+          <div *ngIf="q.type === 'short'">
+            <input
+              type="text"
+              class="form-control"
+              [value]="q.selectedAnswer"
+              placeholder="Applicant's answer"
+              disabled
+            />
+          </div>
+        </div>
+
+        <!-- Right Side: Assessor's Answers -->
+        <div class="right-side">
+          <h6 class="fw-bold text-primary">{{ q.id }}. {{ q.question }}</h6>
+
+          <!-- MCQ Options -->
+          <div *ngIf="q.type === 'mcq'">
+            <div *ngFor="let option of q.options; let j = index" class="form-check">
+              <input
+                type="radio"
+                class="form-check-input"
+                [name]="'assessor_' + q.id"
+                [id]="'assessor_' + q.id + '_' + j"
+                [value]="option.text"
+                [(ngModel)]="blankCopy[q.id].selectedAnswer"
+              />
+              <label class="form-check-label" [for]="'assessor_' + q.id + '_' + j">
+                {{ option.text }}
+                <span class="text-muted">({{ option.points }} pts)</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Short Answer -->
+          <div *ngIf="q.type === 'short'">
+            <input
+              type="text"
+              class="form-control mb-2"
+              [(ngModel)]="blankCopy[q.id].selectedAnswer"
+              placeholder="Enter assessor's evaluation"
+            />
+
+            <!-- Weight Input -->
+            <input
+              type="number"
+              step="0.01"
+              min="0"
+              class="form-control"
+              [(ngModel)]="blankCopy[q.id].weight"
+              placeholder="Optional weight (e.g. 1.5)"
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- Pagination -->
+      <div class="pagination-container" *ngIf="totalPages > 1">
+        <button
+          type="button"
+          class="pagination-btn"
+          (click)="prevPage()"
+          [disabled]="currentPage === 1">
+          ← Previous
+        </button>
+
+        <span class="page-info">Page {{ currentPage }} of {{ totalPages }}</span>
+
+        <button
+          type="button"
+          class="pagination-btn"
+          (click)="nextPage()"
+          [disabled]="currentPage === totalPages">
+          Next →
+        </button>
+      </div>
+
+      <!-- Save Button -->
+      <div class="save-container mt-3">
+        <button
+          type="button"
+          class="save-btn btn btn-primary"
+          (click)="confirmSaveAssessment()">
+          Save Assessment
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
