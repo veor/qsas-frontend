@@ -160,27 +160,79 @@ save() {
   this.loaderService.show();
 
   this.applicantService.updateApplicant(formData).subscribe({
-    next: () => {
+    next: (res) => {
       this.loaderService.hide();
       this.toast.showSuccess('Application updated successfully!');
       this.dialogRef.close(true);
 
-      this.assessmentAccessGuard.allowAccessOnce();
+      const hasRefNo = res.has_ref_no;
+      const hasAssessmentAnswers = res.has_assessment_answers;
+      const applicationRefNo = res.application_ref_no;
 
-      this.router.navigate(['apply/programs'], {
-        state: { 
-          applicationRefNo: this.data.application_ref_no,
-          scholarshipTitle: 'Scholarship Application'
-        }
-      });
+      // If no ref_no OR no assessment answers yet → go to assessment-form
+      if (!hasRefNo || !hasAssessmentAnswers) {
+        this.assessmentAccessGuard.allowAccessOnce();
+        this.router.navigate(['assessment-form'], {
+          state: {
+            applicationRefNo: applicationRefNo,
+            scholarshipTitle: 'Scholarship Application'
+          }
+        });
+      } else {
+        // Has ref_no AND already has assessment answers → skip to programs
+        this.router.navigate(['apply/programs'], {
+          state: {
+            applicationRefNo: applicationRefNo,
+            scholarshipTitle: 'Scholarship Application'
+          }
+        });
+      }
     },
     error: err => {
       this.loaderService.hide();
       console.error('Update failed:', err);
-      this.toast.showError('Failed to update application ');
+      this.toast.showError('Failed to update application');
     }
   });
-}
+}  
+
+  // save() {
+  //   const formData = new FormData();
+  //   Object.keys(this.editForm.value).forEach(key => {
+  //     const value = this.editForm.value[key];
+  //     if (value !== null && value !== undefined) {
+  //       if (key === 'picture' && value instanceof File) {
+  //         formData.append('picture', value);
+  //       } else {
+  //         formData.append(key, value);
+  //       }
+  //     }
+  //   });
+
+  //   this.loaderService.show();
+
+  //   this.applicantService.updateApplicant(formData).subscribe({
+  //     next: () => {
+  //       this.loaderService.hide();
+  //       this.toast.showSuccess('Application updated successfully!');
+  //       this.dialogRef.close(true);
+
+  //       this.assessmentAccessGuard.allowAccessOnce();
+
+  //       this.router.navigate(['apply/programs'], {
+  //         state: { 
+  //           applicationRefNo: this.data.application_ref_no,
+  //           scholarshipTitle: 'Scholarship Application'
+  //         }
+  //       });
+  //     },
+  //     error: err => {
+  //       this.loaderService.hide();
+  //       console.error('Update failed:', err);
+  //       this.toast.showError('Failed to update application ');
+  //     }
+  //   });
+  // }
 
 
 

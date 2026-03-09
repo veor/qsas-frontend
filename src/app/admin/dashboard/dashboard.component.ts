@@ -46,7 +46,7 @@ export class DashboardComponent implements OnInit {
       applicants: 0
     },
     {
-      title: 'Stan C',
+      title: 'STAN C',
       description: 'A special scholarship program for excellence',
       applicants: 0
     }
@@ -103,9 +103,9 @@ export class DashboardComponent implements OnInit {
           applicants: counts['Priority Courses Scholarship'] ?? 0
         },
         {
-          title: 'Stan C',
+          title: 'STAN C',
           description: 'A special scholarship program for excellence',
-          applicants: counts['Stan C'] ?? 0
+          applicants: counts['STAN C'] ?? 0
         }
       ];
       this.loaderService.hide(); // hide loader when done

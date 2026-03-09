@@ -115,7 +115,6 @@ export class PreviewApplicantComponent {
         this.data.hard_to_reach_barangays = this.editableLocation.hard_to_reach_barangays;
         this.isEditingLocation = false;
         this.toast.showSuccess('Location updated successfully.');
-        this.dialogRef.close({ reload: true });
       },
       error: () => this.toast.showError('Failed to update location.')
     });
@@ -146,7 +145,6 @@ export class PreviewApplicantComponent {
         this.data.grades = [...this.editableGrades];
         this.isEditingGrades = false;
         this.toast.showSuccess('Grades updated successfully.');
-        this.dialogRef.close({ reload: true });
       },  
       error: () => {
         this.toast.showError('Failed to update grades.');

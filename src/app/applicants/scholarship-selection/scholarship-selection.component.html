@@ -38,7 +38,7 @@
             [disabled]="isAlreadyApplied(scholarship)"
             [class.applied]="isAlreadyApplied(scholarship)"
           >
-            {{ isAlreadyApplied(scholarship) ? 'Already Applied' : 'Apply Now' }}
+            {{ isAlreadyApplied(scholarship) ? (scholarship.disabled ? 'Not Available' : 'Already Applied') : 'Apply Now' }}
           </button>
         </div>
       </div>

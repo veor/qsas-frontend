@@ -1,4 +1,4 @@
 export const environment = {
     production: true,
-    apiUrl: 'https://qsas.quezonsystems.com/'
+    apiUrl: 'https://qsas.quezon.gov.ph/'
 };

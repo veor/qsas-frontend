@@ -9,6 +9,41 @@ export class AuthInterceptor implements HttpInterceptor {
   private authService = inject(AuthService);
   private router = inject(Router);
 
+  private readonly publicRoutes = [
+    '/auth/login',
+    '/apply',
+    '/apply/programs',
+    '/apply/application-form',
+    '/assessment-form',
+    '/admin/login'
+  ];
+
+  // intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+  //   const isPublic = this.publicRoutes.some(route => request.url.includes(route));
+
+  //   if (isPublic) {
+  //     return next.handle(request);
+  //   }
+
+  //   const token = this.authService.getToken();
+  //   if (token) {
+  //     request = request.clone({
+  //       setHeaders: {
+  //         Authorization: `Bearer ${token}`
+  //       }
+  //     });
+  //   }
+
+  //   return next.handle(request).pipe(
+  //     catchError(error => {
+  //       if (error.status === 401) {
+  //         this.authService.logout();
+  //         this.router.navigate(['/admin/login']);
+  //       }
+  //       return throwError(() => error);
+  //     })
+  //   );
+  // }
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     if (request.url.includes('/auth/login')) {
       return next.handle(request);

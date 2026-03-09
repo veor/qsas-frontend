@@ -90,7 +90,6 @@ export class AdminAssessmentFormComponent implements OnInit {
               weight: 0
             }));
 
-          // Keep a blank copy for ngModel binding
           this.blankCopy = {};
           this.questions.forEach(q => {
             this.blankCopy[q.id] = { ...q, weight: 0 };
@@ -101,7 +100,7 @@ export class AdminAssessmentFormComponent implements OnInit {
             applicantRes.data.forEach(saved => {
               const q = this.questions.find(q => q.id === saved.id);
               if (q) {
-                // Works for both MCQ and short answers
+                // for both MCQ and short answers
                 q.selectedAnswer = saved.answer;
               }
             });

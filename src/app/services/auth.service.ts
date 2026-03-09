@@ -3,6 +3,10 @@ import { inject, Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { environment } from '../../environments/environment.development';
 
+// --- PRODUCTION ---
+// const API_URL = environment.apiUrl+'/qsas-backend/';
+// --- SSL ---
+const API_URL = environment.apiUrl;
 
 export interface LoginResponse {
   success: boolean;
@@ -22,8 +26,6 @@ export interface User {
   name: string;
     permissions: string[];
 }
-
-const API_URL = environment.apiUrl;
 
 @Injectable({
   providedIn: 'root'

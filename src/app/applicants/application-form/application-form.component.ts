@@ -132,11 +132,15 @@ export class ApplicationFormComponent {
       current_academic_status: ['', Validators.required],
       current_course: [''], 
       current_school: [''], 
+      grades: this.fb.array([]),
+      school_year_start: ['', Validators.required],
+      school_year_end: ['', Validators.required],
+      grading_period: ['', Validators.required],
       grade_pdf: [null, Validators.required],
       picture: [null, Validators.required],
       secret_question: ['', Validators.required],
       secret_answer: ['', Validators.required],
-      grades: this.fb.array([])
+      
     });
     this.initSingleGrade();
 
@@ -148,13 +152,16 @@ export class ApplicationFormComponent {
       this.grades.valueChanges.subscribe(() => this.calculateTotalGrades());
     });
     this.otherDetailsForm.get('current_academic_status')?.valueChanges.subscribe(val => {
+       // Reset grading period when status changes
+      this.otherDetailsForm.patchValue({ grading_period: '' });
+
       if (val === '1' || val === '2') {
         this.otherDetailsForm.patchValue({ current_course: '' });
       }
     });
     this.applicantService.getDistrictsAndMunicipalities().subscribe({
       next: ({ districts, municipalities }) => {
-        this.districts = districts;
+        this.districts = districts.sort((a, b) => a.id - b.id);
         this.municipalities = municipalities;
         this.loaderService.hide();
       },
@@ -237,6 +244,11 @@ export class ApplicationFormComponent {
     const status = this.otherDetailsForm.get('current_academic_status')?.value;
     return status === '1' || status === '2'; 
   }
+  isCollegeSelected(): boolean {
+    const status = this.otherDetailsForm.get('current_academic_status')?.value;
+    return status === '3' || status === '4' || status === '5' || status === '6' || status === '7' || status === '8'; 
+  }
+
   private markFormGroupTouched(formGroup: FormGroup) {
     Object.keys(formGroup.controls).forEach(key => {
       const control = formGroup.get(key);
@@ -364,13 +376,11 @@ export class ApplicationFormComponent {
   private finalSubmit(formData: any) {
     const payload = new FormData();
 
-    // Calculate sum of all grades
       const grades = this.otherDetailsForm.get('grades')?.value || [];
       const totalGradePoints = grades.reduce((sum: number, g: any) => {
         return sum + parseFloat(g.numeric_grade);
       }, 0);
 
-    // Append all form fields
     Object.keys(formData).forEach(key => {
       const value = formData[key];
 
@@ -380,7 +390,6 @@ export class ApplicationFormComponent {
         } else if (key === 'gradeFile') {
           payload.append('grade_pdf', value);
         } else if (key === 'grades') {
-          // Convert grades array to JSON string
           payload.append('grades', JSON.stringify(value));
         } else {
           payload.append(key, value);
@@ -388,7 +397,6 @@ export class ApplicationFormComponent {
       }
     });
 
-    // Append total grade points
     payload.append('total_grade_points', this.totalGradePoints.toString());
     this.loaderService.show();
 
@@ -397,18 +405,15 @@ export class ApplicationFormComponent {
         this.loaderService.hide();
         this.toast.showSuccess('Application submitted successfully!');
 
-        // Reset forms and stepper
         this.basicInfoForm.reset();
         this.otherDetailsForm.reset();
         this.filteredMunicipalities = [];
 
-        // Reset file inputs
         ['picture', 'grade_pdf'].forEach(name => {
           const fileInput = document.querySelector<HTMLInputElement>(`input[formControlName="${name}"]`);
           if (fileInput) fileInput.value = '';
         });
 
-        // Reset grades array and re-initialize single entry
         while (this.grades.length) {
           this.grades.removeAt(0);
         }
