@@ -51,6 +51,8 @@ export class ApplicantListComponent {
   selectedDateRange: { start: Date | null; end: Date | null } = { start: null, end: null };
   page: number = 1;       
   itemsPerPage: number = 5;
+  itemsPerPageOptions: number[] = [5, 10, 25, 50];
+  selectedAcademicStatus: string = '';
 
   ngOnInit(): void {
     this.loaderService.show();
@@ -90,28 +92,58 @@ export class ApplicantListComponent {
   getRecommendingAssessment(applicant: any): number | string {
     return applicant.recommending_assessment ?? '-';
   }
+  // get filteredApplicants(): Applicant[] {
+  //   let filtered = this.applicants;
+
+  //   if (this.selectedOption && this.selectedOption !== '') {
+  //     filtered = filtered.filter(app => app.scholarship_type === this.selectedOption);
+  //   }
+
+  //   if (this.searchText) {
+  //     const search = this.searchText.toLowerCase();
+  //     filtered = filtered.filter(app =>
+  //       app.name.toLowerCase().includes(search) ||
+  //       app.application_ref_no.toLowerCase().includes(search) 
+  //     );
+  //   }
+
+  //   if (this.selectedDateRange.start && this.selectedDateRange.end) {
+  //     const start = new Date(this.selectedDateRange.start).getTime();
+  //     const end = new Date(this.selectedDateRange.end).getTime();
+
+  //     filtered = filtered.filter(app => {
+  //       const appDate = new Date(app.created_at).getTime();
+  //       return appDate >= start && appDate <= end;
+  //     });
+  //   }
+
+  //   return filtered;
+  // }
   get filteredApplicants(): Applicant[] {
     let filtered = this.applicants;
 
-    // Filter by scholarship type
     if (this.selectedOption && this.selectedOption !== '') {
       filtered = filtered.filter(app => app.scholarship_type === this.selectedOption);
     }
 
-    // Filter by search text
+    // Filter by academic status level
+    if (this.selectedAcademicStatus !== '') {
+      filtered = filtered.filter(app =>
+        String(app.current_academic_status) === this.selectedAcademicStatus
+      );
+    }
+
     if (this.searchText) {
       const search = this.searchText.toLowerCase();
       filtered = filtered.filter(app =>
         app.name.toLowerCase().includes(search) ||
-        app.application_ref_no.toLowerCase().includes(search) 
+        app.application_ref_no.toLowerCase().includes(search)
       );
     }
 
-    // Filter by date range
     if (this.selectedDateRange.start && this.selectedDateRange.end) {
       const start = new Date(this.selectedDateRange.start).getTime();
       const end = new Date(this.selectedDateRange.end).getTime();
-
       filtered = filtered.filter(app => {
         const appDate = new Date(app.created_at).getTime();
         return appDate >= start && appDate <= end;
@@ -120,15 +152,32 @@ export class ApplicantListComponent {
 
     return filtered;
   }
-
   openPreview(applicant: Applicant) {
     this.dialog.open(PreviewApplicantComponent, {
       width: '800px',
       data: {
         ...applicant,
         picture: applicant.picture ? (this.apiUrl + applicant.picture) : 'assets/default-avatar.png',
+        // picture: applicant.picture || 'assets/default-avatar.png', ///prod
         grade_pdf: applicant.grade_pdf ? (this.apiUrl + applicant.grade_pdf) : null 
+        // grade_pdf: applicant.grade_pdf ?? null  //prod
       }
     });
+  }
+  
+  get totalPages(): number {
+    return Math.ceil(this.filteredApplicants.length / this.itemsPerPage);
+  }
+
+  get pageNumbers(): number[] {
+    return Array.from({ length: this.totalPages }, (_, i) => i + 1);
+  }
+
+  onItemsPerPageChange(): void {
+    this.page = 1;
+  }
+
+  goToPage(p: number): void {
+    this.page = p;
   }
 }

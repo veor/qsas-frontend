@@ -40,6 +40,16 @@
           >
             {{ isAlreadyApplied(scholarship) ? (scholarship.disabled ? 'Not Available' : 'Already Applied') : 'Apply Now' }}
           </button>
+
+          <!-- Download button shown only when applied and a form URL exists -->
+          <button
+            *ngIf="hasFormDownload(scholarship) && appliedScholarships.includes(scholarship.title)"
+            class="download-btn"
+            (click)="$event.stopPropagation(); downloadForm(scholarship)"
+          >
+            <mat-icon>download</mat-icon>
+            Download Form
+          </button>
         </div>
       </div>
     </div>

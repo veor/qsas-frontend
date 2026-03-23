@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { ApplicantHeaderComponent } from '../../shared/applicant-header/applicant-header.component';
 import { ScholarshipConfirmationDialogComponent } from './scholarship-confirmation-dialog/scholarship-confirmation-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
+import { MatIcon } from '@angular/material/icon';
 import { ToastService } from '../../services/toast.service';
 import { LoaderService } from '../../services/loader.service';
 import { ApplicantService } from '../../services/applicant.service';
@@ -12,15 +13,15 @@ import { environment } from '../../../environments/environment.development';
 
 const FORM_DOWNLOADS: Record<string, string> = {
   'priority-courses': environment.production
-    ? 'https://qsas.quezonsystems.com/files/priority-courses-form.pdf'
+    ? 'https://qsas.quezon.gov.ph/qsas-backend/public/files/priority-courses-form.pdf'
     : 'https://localhost/qsas/qsas-backend/files/priority-courses-form.pdf',
 
   'qshs-exam': environment.production
-    ? 'https://qsas.quezonsystems.com/files/qshs-exam-form.pdf'
+    ? 'https://qsas.quezon.gov.ph/qsas-backend/public/files/qshs-exam-form.pdf'
     : 'https://localhost/qsas/qsas-backend/files/qshs-exam-form.pdf',
 
   'one-family-scholarship': environment.production
-    ? 'https://qsas.quezonsystems.com/files/one-family-scholarship-form.pdf'
+    ? 'https://qsas.quezon.gov.ph/qsas-backend/public/files/one-family-scholarship-form.pdf'
     : 'https://localhost/qsas/qsas-backend/files/1pf1cg-form.pdf',
 };
 
@@ -37,7 +38,8 @@ interface Scholarship {
   standalone: true,
   imports: [
     CommonModule,
-    ApplicantHeaderComponent
+    ApplicantHeaderComponent,
+    MatIcon  
   ],
   templateUrl: './scholarship-selection.component.html',
   styleUrls: ['./scholarship-selection.component.css']
@@ -100,6 +102,17 @@ export class ScholarshipSelectionComponent {
   // }
   isAlreadyApplied(scholarship: Scholarship): boolean {
     return scholarship.disabled || this.appliedScholarships.includes(scholarship.title);
+  }
+
+  hasFormDownload(scholarship: Scholarship): boolean {
+    return !!FORM_DOWNLOADS[scholarship.id];
+  }
+
+  downloadForm(scholarship: Scholarship): void {
+    const formUrl = FORM_DOWNLOADS[scholarship.id];
+    if (formUrl) {
+      window.open(formUrl, '_blank');
+    }
   }
 
    selectScholarship(scholarship: Scholarship): void {

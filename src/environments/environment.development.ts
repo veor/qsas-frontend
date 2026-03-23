@@ -6,8 +6,5 @@ export const environment = {
     //--- DEVELOPMENT --- 
     // SSL   
     apiUrl: '/api/qsas/qsas-backend'
-    /* --- WWW --- */
-    // apiUrl: '/qsas/qsas-backend'
-
 };
 

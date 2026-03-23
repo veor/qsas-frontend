@@ -6,7 +6,8 @@ import { Question } from '../admin/settings/assessment-builder/assessment-builde
 
 // --- PRODUCTION ---
 // const API_URL = environment.apiUrl+'/qsas-backend/';
-// --- SSL ---
+
+// --- DEVELOPMENT SSL ---
 const API_URL = environment.apiUrl;
 
 export interface Applicant {
@@ -33,7 +34,7 @@ export interface Applicant {
   hometown_location: string;
   hard_to_reach_barangays: string;
   barangay_accessibility: string;
-
+  current_academic_status: number | string;
 }
 
 @Injectable({
@@ -44,8 +45,10 @@ export class AdminService {
 
 // --- Applicants ---
   getApplicants(): Observable<Applicant[]> {
-    return this.http.get<Applicant[]>(API_URL + '/admin/applicants');    
-    // return this.http.get<Applicant[]>(API_URL + 'admin/applicants');    
+    // DEVELOPMENT SSL
+    return this.http.get<Applicant[]>(API_URL + '/admin/applicants'); 
+    // PRODUCTION
+    // return this.http.get<Applicant[]>(API_URL + 'admin/getApplicants'); 
 
   }
   updateLocation(application_ref_no: string, location: {
@@ -53,64 +56,83 @@ export class AdminService {
     barangay_accessibility: string;
     hard_to_reach_barangays: string;
   }): Observable<any> {
-    return this.http.post<any>(API_URL + '/admin/update-location', { application_ref_no, ...location });
-    // return this.http.post<any>(API_URL + 'admin/update-location', { application_ref_no, ...location });
+    // DEVELOPMENT SSL
+    return this.http.post<any>(API_URL + '/admin/update-location', { application_ref_no, ...location }); 
+    // PRODUCTION
+    // return this.http.post<any>(API_URL + 'admin/updateLocation', { application_ref_no, ...location }); 
   }
   updateGrades(application_ref_no: string, grades: { numeric_grade: number; grade_label: string }[]): Observable<any> {
-    return this.http.post<any>(API_URL + '/admin/update-grades', { application_ref_no, grades });
-    // return this.http.post<any>(API_URL + 'admin/update-grades', { application_ref_no, grades });
+    // DEVELOPMENT SSL
+    return this.http.post<any>(API_URL + '/admin/update-grades', { application_ref_no, grades }); 
+    // PRODUCTION
+    // return this.http.post<any>(API_URL + 'admin/updateGrades', { application_ref_no, grades }); 
   }
 // --- Dashboard ---
   getScholarshipCounts(): Observable<{ [key: string]: number }> {
+     // DEVELOPMENT SSL
     return this.http.get<{ [key: string]: number }>(API_URL + '/admin/scholarship-counts');
-    // return this.http.get<{ [key: string]: number }>(API_URL + 'admin/scholarship-counts');
+    // PRODUCTION
+    // return this.http.get<{ [key: string]: number }>(API_URL + 'admin/getScholarshipCounts'); 
   }
 // --- Settings ---
   addUser(newUser: FormData): Observable<any> {
+    // DEVELOPMENT SSL
     return this.http.post<any>(API_URL + '/admin/create-user', newUser);
-    // return this.http.post<any>(API_URL + 'admin/create-user', newUser);
+    // PRODUCTION 
+    // return this.http.post<any>(API_URL + 'admin/createUser', newUser); 
   }
   changePassword(data: { idNo: string, oldPassword: string, newPassword: string }): Observable<any> {
-    return this.http.post<any>(API_URL + '/admin/change-password', data);
-    // return this.http.post<any>(API_URL + 'admin/change-password', data);
+    // DEVELOPMENT SSL
+    return this.http.post<any>(API_URL + '/admin/change-password', data); 
+    // PRODUCTION
+    // return this.http.post<any>(API_URL + 'admin/changePassword', data); 
   }
   getMyPermissions(idNo: string) {
-    return this.http.post<any>(API_URL + '/admin/get-my-permissions', { idNo });
-    // return this.http.post<any>(API_URL + 'admin/get-my-permissions', { idNo });
+    // DEVELOPMENT SSL
+    return this.http.post<any>(API_URL + '/admin/get-my-permissions', { idNo }); 
+    // PRODUCTION
+    // return this.http.post<any>(API_URL + 'admin/getMyPermissions', { idNo }); 
   }
   updateMyPermissions(idNo: string, permissions: string[]) {
-    return this.http.post<any>(API_URL + '/admin/update-my-permissions', { idNo, permissions });
-    // return this.http.post<any>(API_URL + 'admin/update-my-permissions', { idNo, permissions });
+    // DEVELOPMENT SSL
+    return this.http.post<any>(API_URL + '/admin/update-my-permissions', { idNo, permissions }); 
+    // PRODUCTION
+    // return this.http.post<any>(API_URL + 'admin/updateMyPermissions', { idNo, permissions }); 
   }
   getAllUsers() {
-    return this.http.get<any>(API_URL + '/admin/users');
-    // return this.http.get<any>(API_URL + 'admin/users');
+    // DEVELOPMENT SSL
+    return this.http.get<any>(API_URL + '/admin/users'); 
+    // PRODUCTION
+    // return this.http.get<any>(API_URL + 'admin/getAllUsers'); 
   }
   updateUser(idNo: string, userData: FormData) {
-    return this.http.post<any>(API_URL + `/admin/users/${idNo}`, userData);
-    // return this.http.post<any>(API_URL + `admin/users/${idNo}`, userData);
+    // DEVELOPMENT SSL
+    return this.http.post<any>(API_URL + `/admin/users/${idNo}`, userData); 
+    // PRODUCTION
+    // return this.http.post<any>(API_URL + `admin/updateUser/${idNo}`, userData); 
   }
   getQuestions() {
-    return this.http.get<{ success: boolean; data: any[]; message?: string }>(
-      `${API_URL}/admin/getQuestions`
+    return this.http.get<{ success: boolean; data: any[]; message?: string }>( 
+    // DEVELOPMENT SSL
+    `${API_URL}/admin/getQuestions` 
+    // PRODUCTION
+    // `${API_URL}admin/getQuestions` 
     );
-    // return this.http.get<{ success: boolean; data: any[]; message?: string }>(
-    //   `${API_URL}admin/getQuestions`
-    // );
   }
   updateQuestion(question: Question): Observable<any> {
-    return this.http.post<any>(API_URL + '/admin/updateQuestion', question);
-    // return this.http.post<any>(API_URL + 'admin/updateQuestion', question);
+    // DEVELOPMENT SSL
+    return this.http.post<any>(API_URL + '/admin/updateQuestion', question); 
+    // PRODUCTION
+    // return this.http.post<any>(API_URL + 'admin/updateQuestion', question); 
   }
   setQuestionStatus(data: { id: string; is_active: number }) {
-    return this.http.post<any>(
-      API_URL + '/admin/setQuestionStatus',
+    return this.http.post<any>( 
+      // DEVELOPMENT SSL
+    API_URL + '/admin/setQuestionStatus', 
+    // PRODUCTION
+      // API_URL + 'admin/setQuestionStatus', 
       data
     );
-    // return this.http.post<any>(
-    //   API_URL + 'admin/setQuestionStatus',
-    //   data
-    // );
   }
   createQuestion(data: {
     question_code: string;
@@ -118,14 +140,13 @@ export class AdminService {
     options: string[];
     points?: number;
   }) {
-    return this.http.post<any>(
-      API_URL + '/admin/createQuestion',
+    return this.http.post<any>( 
+      // DEVELOPMENT SSL
+    API_URL + '/admin/createQuestion', 
+    // PRODUCTION
+      // API_URL + 'admin/createQuestion', 
       data
     );
-    // return this.http.post<any>(
-    //   API_URL + 'admin/createQuestion',
-    //   data
-    // );
   }
 
 // --- Save assessor's assessment answers
@@ -134,13 +155,42 @@ export class AdminService {
     assessor_id_no: string, 
     answers: any[] 
   }): Observable<any> {
-    return this.http.post<any>(API_URL + '/admin/assessment/save', data);
-    // return this.http.post<any>(API_URL + 'admin/assessment/save', data);
+    // DEVELOPMENT SSL
+    return this.http.post<any>(API_URL + '/admin/assessment/save', data); 
+    // PRODUCTION
+    // return this.http.post<any>(API_URL + 'admin/saveAssessorEvaluation', data); 
   }
 
   getAssessmentAnswers(application_ref_no: string) {
-    return this.http.get(`${API_URL}/admin/assessment/get/${application_ref_no}`);
-    // return this.http.get(`${API_URL}admin/assessment/get/${application_ref_no}`);
+    // DEVELOPMENT SSL
+    return this.http.get(`${API_URL}/admin/assessment/get/${application_ref_no}`); 
+    // PRODUCTION
+    // return this.http.get(`${API_URL}admin/getAssessorEvaluation/${application_ref_no}`); 
+  }
+
+// -- Top 35 Priority Courses
+  getTopByCourse(): Observable<{ application_ref_no: string; current_course: string; priority_weight: number | null }[]> {
+    // return this.http.get<any[]>(API_URL + '/admin/getTopByCourseForPriorityCourses');
+    return this.http.get<any[]>(API_URL + '/admin/top-by-course');
+  }
+// -- Top 35 1Poor and Stan C
+  getTopByMunicipality(params: { page?: number; scholarship_type?: string; municipality?: string; }): Observable<{
+    data: { application_ref_no: string; municipality: string; scholarship_type: string; assessment_weight: number | null }[];
+    total: number;
+    page: number;
+    total_pages: number;
+    available_municipalities: string[];
+    available_scholarships: string[];
+  }> {
+    const query = new URLSearchParams();
+    if (params.page)              query.set('page', String(params.page));
+    if (params.scholarship_type)  query.set('scholarship_type', params.scholarship_type);
+    if (params.municipality)      query.set('municipality', params.municipality);
+
+    // DEVELOPMENT SSL
+    return this.http.get<any>(`${API_URL}/admin/top-by-municipality?${query.toString()}`);
+    // PRODUCTION
+    // return this.http.get<any>(`${API_URL}admin/getTopByMunicipality?${query.toString()}`);
   }
 
 }

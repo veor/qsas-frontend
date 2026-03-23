@@ -1,5 +1,4 @@
-/* You can add global styles to this file, and also import other style files */
-* {
+/* * {
   font-family: 'Inter', sans-serif;
 }
 @font-face {
@@ -10,4 +9,291 @@
 }
 
 html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; } */
+/* You can add global styles to this file, and also import other style files */
+
+@font-face {
+  font-family: 'Inter';
+  src: url('assets/fonts/Inter-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* @font-face {
+  font-family: 'Inter';
+  src: url('assets/fonts/Inter-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Inter';
+  src: url('assets/fonts/Inter-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Inter';
+  src: url('assets/fonts/Inter-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+} */
+
+/* ── Custom Properties ── */
+:root {
+  /* Brand colors */
+  --color-accent:       #ff5400;
+  --color-accent-light: rgba(255, 84, 0, 0.12);
+  --color-accent-hover: #e64c00;
+
+  --color-purple:       #9191b4;
+  --color-purple-light: rgba(145, 145, 180, 0.15);
+
+  --color-bg:           #ebebf4;
+  --color-bg-card:      #ffffff;
+
+  --color-teal:         #14967f;
+  --color-teal-light:   rgba(20, 150, 127, 0.12);
+  --color-teal-hover:   #0f7a67;
+
+  --color-dark:         #303944;
+  --color-dark-mid:     #3d4a57;
+  --color-dark-light:   #4e5d6d;
+
+  /* Semantic text */
+  --text-primary:       #303944;
+  --text-secondary:     #9191b4;
+  --text-muted:         #a8afc7;
+  --text-on-dark:       #f0f2f8;
+  --text-on-dark-muted: rgba(240, 242, 248, 0.6);
+
+  /* Borders */
+  --border-light:       rgba(145, 145, 180, 0.2);
+  --border-card:        rgba(145, 145, 180, 0.15);
+
+  /* Shadows */
+  --shadow-sm:   0 1px 3px rgba(48, 57, 68, 0.08);
+  --shadow-md:   0 4px 16px rgba(48, 57, 68, 0.1);
+  --shadow-lg:   0 8px 32px rgba(48, 57, 68, 0.14);
+
+  /* Radii */
+  --radius-sm:   6px;
+  --radius-md:   12px;
+  --radius-lg:   18px;
+  --radius-pill: 999px;
+
+  /* Transitions */
+  --transition-fast: 0.15s ease;
+  --transition-base: 0.22s ease;
+}
+
+/* ── Reset & Base ── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.6;
+  color: var(--text-primary);
+  background-color: var(--color-bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Pagination Bar ── */
+.pagination-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  margin-top: 0.5rem;
+  background: var(--color-bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Left section */
+.pagination-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.results-count {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.per-page-group {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.per-page-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.per-page-select {
+  appearance: none;
+  background: var(--color-bg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-size: 0.8rem;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  padding: 0.3rem 1.75rem 0.3rem 0.6rem;
+  cursor: pointer;
+  outline: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 12 12'%3E%3Cpath fill='%239191b4' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.per-page-select:focus {
+  border-color: var(--color-teal);
+  box-shadow: 0 0 0 3px var(--color-teal-light);
+}
+
+/* Center section */
+.pagination-center {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.page-jump-group {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.page-jump-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.page-jump-select {
+  appearance: none;
+  background: var(--color-dark);
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  color: var(--text-on-dark);
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  padding: 0.35rem 1.75rem 0.35rem 0.75rem;
+  cursor: pointer;
+  outline: none;
+  min-width: 56px;
+  text-align: center;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 12 12'%3E%3Cpath fill='rgba(240,242,248,0.6)' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  transition: background var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.page-jump-select:focus {
+  background-color: var(--color-dark-mid);
+  box-shadow: 0 0 0 3px var(--color-accent-light);
+}
+
+/* Shared button base */
+.page-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-card);
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  transition: background var(--transition-fast),
+              border-color var(--transition-fast),
+              color var(--transition-fast),
+              transform var(--transition-fast),
+              box-shadow var(--transition-fast);
+}
+
+.page-btn:hover:not(:disabled) {
+  background: var(--color-purple-light);
+  border-color: var(--color-purple);
+  transform: translateY(-1px);
+}
+
+.page-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Nav prev/next buttons */
+.nav-btn {
+  width: 34px;
+  height: 34px;
+  padding: 0;
+}
+
+.nav-btn mat-icon {
+  font-size: 1.1rem;
+  width: 1.1rem;
+  height: 1.1rem;
+  color: inherit;
+}
+
+/* Right pill buttons */
+.pagination-right {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.pill-btn {
+  min-width: 34px;
+  height: 34px;
+  padding: 0 0.5rem;
+}
+
+.pill-btn.active {
+  background: var(--color-accent);
+  border-color: transparent;
+  color: #fff;
+  box-shadow: 0 2px 8px var(--color-accent-light);
+  cursor: default;
+  transform: none;
+}
+
+.ellipsis {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  padding: 0 2px;
+  user-select: none;
+}

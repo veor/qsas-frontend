@@ -8,6 +8,12 @@
             alt="Applicant Picture"
             class="applicant-avatar"
           />
+          <!-- prod  -->
+          <!-- <img 
+            [src]="data.picture || 'assets/default-avatar.png'" 
+            alt="Applicant Picture"
+            class="applicant-avatar"
+          /> -->
         </div>
         <div class="header-info">
           <h2 class="applicant-name">{{ data.name }}</h2>
@@ -266,13 +272,13 @@
             <div class="info-item full-width">
               <span class="label">Grade PDF</span>
               <span class="value">
-                <ng-container *ngIf="data.grade_pdf; else noPdf">
-                  <iframe
-                    [src]="data.grade_pdf | safeUrl"
-                    width="100%"
-                    height="500px"
-                    style="border:1px solid #ccc; border-radius: 4px;"
-                  ></iframe>
+                 <ng-container *ngIf="data.grade_pdf; else noPdf">
+                  <a [href]="data.grade_pdf" target="_blank" rel="noopener noreferrer">
+                    <button mat-raised-button color="primary">
+                      <mat-icon>picture_as_pdf</mat-icon>
+                      Download Grade PDF
+                    </button>
+                  </a>
                 </ng-container>
                 <ng-template #noPdf>
                   <em>No Grade PDF submitted</em>

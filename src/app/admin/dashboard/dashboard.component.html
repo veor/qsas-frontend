@@ -2,36 +2,253 @@
   <h2 class="dashboard-title">Dashboard</h2>
 
   <div class="toolbar-right">
-    <!-- Search bar -->
     <input 
       type="text" 
       placeholder="Search scholarships..." 
       class="search-bar" 
       [(ngModel)]="searchText" 
     />
-
-    <!-- Current date -->
     <div class="current-date">{{ currentDate }}</div>
   </div>
 </div>
 
-
 <div class="dashboard-container">
   <main class="dashboard-content">
+
+    <!-- Scholarship Cards -->
     <div class="card-grid">
       <div 
         class="scholarship-card" 
         *ngFor="let scholarship of scholarships | search:searchText" 
         (click)="selectScholarship(scholarship)">
-        
         <h3>{{ scholarship.title }}</h3>
         <p>{{ scholarship.description }}</p>
-
         <div class="applicant-info">
           <small>Total number of applicants</small>
           <div class="applicant-count">{{ scholarship.applicants }}</div>
         </div>
       </div>
+    </div>
+
+    <!-- Ranking Section -->
+    <div class="ranking-section">
+
+      <!-- Top 35 by Course -->
+      <div class="ranking-card">
+        <div class="ranking-header">
+          <div class="ranking-header-left">
+            <span class="ranking-badge">Top 35</span>
+            <div>
+              <h3 class="ranking-title">Priority Courses</h3>
+              <p class="ranking-subtitle">Ranked highest to lowest per course applied</p>
+            </div>
+          </div>
+          <span class="ranking-icon">🎓</span>
+        </div>
+
+        <!-- Filter bar -->
+        <div class="ranking-filter-bar">
+          <span class="ranking-filter-label">Filter by course</span>
+          <select class="ranking-filter-select"
+                  [(ngModel)]="selectedCourse"
+                  (ngModelChange)="onCourseFilterChange()">
+            <option value="">All Courses</option>
+            <option *ngFor="let course of availableCourses" [value]="course">
+              {{ course }}
+            </option>
+          </select>
+          <button class="ranking-filter-clear"
+                  *ngIf="selectedCourse"
+                  (click)="selectedCourse = ''; onCourseFilterChange()">
+            <mat-icon>close</mat-icon>
+            Clear
+          </button>
+          <span class="ranking-filter-count" *ngIf="selectedCourse">
+            {{ filteredTopByCourse.length }} result{{ filteredTopByCourse.length !== 1 ? 's' : '' }}
+          </span>
+        </div>
+
+        <div class="ranking-list">
+          <div class="ranking-row ranking-row--header">
+            <span class="rank-col">#</span>
+            <span class="name-col">Ref. No.</span>
+            <span class="meta-col">Course</span>
+            <span class="score-col">Score</span>
+          </div>
+
+          <div class="ranking-row"
+              *ngFor="let item of paginatedTopByCourse; let i = index"
+              [class.rank-gold]="(courseRankPage - 1) * courseRankItemsPerPage + i === 0"
+              [class.rank-silver]="(courseRankPage - 1) * courseRankItemsPerPage + i === 1"
+              [class.rank-bronze]="(courseRankPage - 1) * courseRankItemsPerPage + i === 2">
+            <span class="rank-col">
+              <span class="rank-number"
+                    [class.rank-medal]="(courseRankPage - 1) * courseRankItemsPerPage + i < 3">
+                {{ (courseRankPage - 1) * courseRankItemsPerPage + i + 1 }}
+              </span>
+            </span>
+            <span class="name-col">{{ item.application_ref_no }}</span>
+            <span class="meta-col">{{ item.current_course }}</span>
+            <span class="score-col">
+              <span class="score-pill">
+                {{ item.priority_weight !== null ? (item.priority_weight | number:'1.2-2') : '-' }}
+              </span>
+            </span>
+          </div>
+
+          <div class="ranking-empty"
+              *ngIf="paginatedTopByCourse.length === 0">
+            <span class="empty-icon">📋</span>
+            <p>{{ selectedCourse ? 'No applicants found for this course' : 'No data available yet' }}</p>
+          </div>
+        </div>
+
+        <div class="ranking-pagination" *ngIf="filteredTopByCourse.length > 0">
+          <div class="ranking-pagination-left">
+            <span class="rp-count">
+              {{ (courseRankPage - 1) * courseRankItemsPerPage + 1 }}–{{ courseRankPage * courseRankItemsPerPage > filteredTopByCourse.length ? filteredTopByCourse.length : courseRankPage * courseRankItemsPerPage }}
+              of {{ filteredTopByCourse.length }}
+            </span>
+          </div>
+          <div class="ranking-pagination-center">
+            <button class="rp-btn"
+                    [disabled]="courseRankPage === 1"
+                    (click)="courseRankPage = courseRankPage - 1">
+              <mat-icon>chevron_left</mat-icon>
+            </button>
+            <select class="rp-select" [(ngModel)]="courseRankPage">
+              <option *ngFor="let p of courseRankPageNumbers" [value]="p">{{ p }}</option>
+            </select>
+            <span class="rp-of">of {{ courseRankTotalPages }}</span>
+            <button class="rp-btn"
+                    [disabled]="courseRankPage === courseRankTotalPages || courseRankTotalPages === 0"
+                    (click)="courseRankPage = courseRankPage + 1">
+              <mat-icon>chevron_right</mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Top 35 by Municipality -->
+      <div class="ranking-card">
+        <div class="ranking-header">
+          <div class="ranking-header-left">
+            <span class="ranking-badge ranking-badge--teal">Top 35</span>
+            <div>
+              <h3 class="ranking-title">Municipality Ranking</h3>
+              <p class="ranking-subtitle">Ranked highest to lowest per municipality</p>
+            </div>
+          </div>
+          <span class="ranking-icon">📍</span>
+        </div>
+
+        <!-- Filter bar -->
+        <div class="ranking-filter-bar">
+          <span class="ranking-filter-label">Filter</span>
+
+          <select class="ranking-filter-select"
+                  [(ngModel)]="selectedMunScholarship"
+                  (ngModelChange)="onMunFilterChange()">
+            <option value="">All Scholarships</option>
+            <option *ngFor="let s of availableScholarships" [value]="s">{{ s }}</option>
+          </select>
+
+          <select class="ranking-filter-select"
+                  [(ngModel)]="selectedMunicipality"
+                  (ngModelChange)="onMunFilterChange()">
+            <option value="">All Municipalities</option>
+            <option *ngFor="let m of availableMunicipalities" [value]="m">{{ m }}</option>
+          </select>
+
+          <button class="ranking-filter-clear"
+                  *ngIf="selectedMunicipality || selectedMunScholarship"
+                  (click)="selectedMunicipality = ''; selectedMunScholarship = ''; onMunFilterChange()">
+            <mat-icon>close</mat-icon>
+            Clear
+          </button>
+
+          <span class="ranking-filter-count" *ngIf="selectedMunicipality || selectedMunScholarship">
+            {{ munRankTotal }} result{{ munRankTotal !== 1 ? 's' : '' }}
+          </span>
+        </div>
+
+        <!-- Loading state -->
+        <div class="ranking-loading" *ngIf="munLoading">
+          <span class="loading-dot"></span>
+          <span class="loading-dot"></span>
+          <span class="loading-dot"></span>
+        </div>
+
+        <div class="ranking-list" *ngIf="!munLoading">
+          <div class="ranking-row ranking-row--header">
+            <span class="rank-col">#</span>
+            <span class="name-col">Ref. No.</span>
+            <span class="meta-col">Municipality</span>
+            <span class="scholarship-col">Scholarship</span>
+            <span class="score-col">Score</span>
+          </div>
+
+          <div class="ranking-row"
+              *ngFor="let item of topByMunicipality; let i = index"
+              [class.rank-gold]="(munRankPage - 1) * 3 + i === 0"
+              [class.rank-silver]="(munRankPage - 1) * 3 + i === 1"
+              [class.rank-bronze]="(munRankPage - 1) * 3 + i === 2">
+            <span class="rank-col">
+              <span class="rank-number"
+                    [class.rank-medal]="(munRankPage - 1) * 3 + i < 3">
+                {{ (munRankPage - 1) * 3 + i + 1 }}
+              </span>
+            </span>
+            <span class="name-col">{{ item.application_ref_no }}</span>
+            <span class="meta-col">{{ item.municipality }}</span>
+            <span class="scholarship-col">
+              <span class="scholarship-tag"
+                    [class.scholarship-tag--teal]="item.scholarship_type === 'STAN C'">
+                {{ item.scholarship_type === 'STAN C' ? 'STAN C' : 'OFOCG' }}
+              </span>
+            </span>
+            <span class="score-col">
+              <span class="score-pill score-pill--teal">
+                {{ item.assessment_weight !== null ? (item.assessment_weight | number:'1.2-2') : '-' }}
+              </span>
+            </span>
+          </div>
+
+          <div class="ranking-empty" *ngIf="topByMunicipality.length === 0">
+            <span class="empty-icon">📋</span>
+            <p>{{ selectedMunicipality || selectedMunScholarship ? 'No results match your filters' : 'No data available yet' }}</p>
+          </div>
+        </div>
+
+        <!-- Pagination -->
+        <div class="ranking-pagination" *ngIf="munRankTotal > 0 && !munLoading">
+          <div class="ranking-pagination-left">
+            <span class="rp-count">
+              {{ (munRankPage - 1) * 3 + 1 }}–{{ munRankPage * 3 > munRankTotal ? munRankTotal : munRankPage * 3 }}
+              of {{ munRankTotal }}
+            </span>
+          </div>
+          <div class="ranking-pagination-center">
+            <button class="rp-btn"
+                    [disabled]="munRankPage === 1"
+                    (click)="onMunPageChange(munRankPage - 1)">
+              <mat-icon>chevron_left</mat-icon>
+            </button>
+            <select class="rp-select"
+                    [(ngModel)]="munRankPage"
+                    (ngModelChange)="onMunPageChange($event)">
+              <option *ngFor="let p of munRankPageNumbers" [value]="p">{{ p }}</option>
+            </select>
+            <span class="rp-of">of {{ munRankTotalPages }}</span>
+            <button class="rp-btn"
+                    [disabled]="munRankPage === munRankTotalPages || munRankTotalPages === 0"
+                    (click)="onMunPageChange(munRankPage + 1)">
+              <mat-icon>chevron_right</mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+
     </div>
   </main>
 </div>

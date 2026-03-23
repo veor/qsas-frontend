@@ -343,10 +343,16 @@ export class ApplicationFormComponent {
       return;
     }
 
-    // All validations passed — proceed to submit
+    const municipalityId = this.otherDetailsForm.get('municipality')?.value;
+
+    const municipalityObj = this.municipalities.find(
+      m => m.id == municipalityId
+    );
+
     const formData = {
       ...this.basicInfoForm.value,
       ...this.otherDetailsForm.value,
+      municipality_name: municipalityObj ? municipalityObj.name : '',
       grades: this.otherDetailsForm.get('grades')?.value,
       total_grade_points: this.totalGradePoints,
       pictureFile,

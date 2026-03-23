@@ -28,7 +28,7 @@
   <div class="applicants-header">
     <h2>Applicants</h2>
 
-    <mat-form-field appearance="outline" class="date-range-picker">
+    <!-- <mat-form-field appearance="outline" class="date-range-picker">
       <mat-label>Filter by Date</mat-label>
       <mat-date-range-input [rangePicker]="picker" [(ngModel)]="selectedDateRange">
         <input matStartDate placeholder="Start date">
@@ -36,7 +36,18 @@
       </mat-date-range-input>
       <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
       <mat-date-range-picker #picker></mat-date-range-picker>
-    </mat-form-field>
+    </mat-form-field> -->
+    <select class="dropdown-select" [(ngModel)]="selectedAcademicStatus">
+      <option value="">All Academic Levels</option>
+      <option value="1">Graduating Senior High School Student</option>
+      <option value="2">Graduate of Senior High School</option>
+      <option value="3">First Year College</option>
+      <option value="4">Second Year College</option>
+      <option value="5">Third Year College</option>
+      <option value="6">Fourth Year College (of a Five-Year Course)</option>
+      <option value="7">Fourth Year College (Graduating Student)</option>
+      <option value="8">Fifth Year College (Graduating Student)</option>
+    </select>
   </div>
 
   <!-- Message when no applicants -->
@@ -57,6 +68,12 @@
         alt="Applicant Picture"
         class="applicant-picture"
       />
+    <!-- prod    -->
+      <!-- <img 
+        [src]="applicant.picture ? applicant.picture : 'assets/default-avatar.png'" 
+        alt="Applicant Picture"
+        class="applicant-picture"
+      /> -->
 
       <div class="applicant-info">
         <div class="info-field">
@@ -93,11 +110,66 @@
     </div>
   </mat-card>
 
-  <!-- Pagination Controls -->
-  <pagination-controls 
-    *ngIf="filteredApplicants.length > 0"
-    (pageChange)="page = $event"
-    [autoHide]="true"
-    class="pagination-controls">
-  </pagination-controls>
+<div class="pagination-bar" *ngIf="filteredApplicants.length > 0">
+
+  <!-- Left: results summary + items per page -->
+  <div class="pagination-left">
+    <span class="results-count">
+      {{ (page - 1) * itemsPerPage + 1 }}–{{ page * itemsPerPage > filteredApplicants.length ? filteredApplicants.length : page * itemsPerPage }}
+      of {{ filteredApplicants.length }}
+    </span>
+
+    <div class="per-page-group">
+      <label class="per-page-label">Rows</label>
+      <select class="per-page-select" [(ngModel)]="itemsPerPage" (ngModelChange)="onItemsPerPageChange()">
+        <option *ngFor="let opt of itemsPerPageOptions" [value]="opt">{{ opt }}</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Center: prev, page jump dropdown, next -->
+  <div class="pagination-center">
+    <button class="page-btn nav-btn" [disabled]="page === 1" (click)="page = page - 1">
+      <mat-icon>chevron_left</mat-icon>
+    </button>
+
+    <div class="page-jump-group">
+      <span class="page-jump-label">Page</span>
+      <select class="page-jump-select" [(ngModel)]="page">
+        <option *ngFor="let p of pageNumbers" [value]="p">{{ p }}</option>
+      </select>
+      <span class="page-jump-label">of {{ totalPages }}</span>
+    </div>
+
+    <button class="page-btn nav-btn" [disabled]="page === totalPages || totalPages === 0" (click)="page = page + 1">
+      <mat-icon>chevron_right</mat-icon>
+    </button>
+  </div>
+
+  <!-- Right: quick page pills (shows up to 7) -->
+  <div class="pagination-right">
+    <ng-container *ngFor="let p of pageNumbers">
+      <button
+        *ngIf="p === 1 || p === totalPages || (p >= page - 2 && p <= page + 2)"
+        class="page-btn pill-btn"
+        [class.active]="p === page"
+        (click)="goToPage(p)">
+        {{ p }}
+      </button>
+      <!-- ellipsis before current window -->
+      <span class="ellipsis"
+        *ngIf="p === page - 3 && p > 2">…</span>
+      <!-- ellipsis after current window -->
+      <span class="ellipsis"
+        *ngIf="p === page + 3 && p < totalPages - 1">…</span>
+    </ng-container>
+  </div>
+
+</div>
+
+<pagination-controls
+  style="display:none"
+  (pageChange)="page = $event"
+  [autoHide]="true">
+</pagination-controls>
 </div>

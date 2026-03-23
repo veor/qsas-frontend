@@ -10,7 +10,7 @@
     <span>{{ currentUser?.name }}</span>
     <img 
       *ngIf="currentUser?.avatar; else defaultAvatar"
-      [src]="backendUrl + '/' + currentUser.avatar"
+      [src]="'https://qsas.quezon.gov.ph/qsas-backend/public/' + currentUser.avatar"
       alt="User Avatar"
       class="profile-img"
     />

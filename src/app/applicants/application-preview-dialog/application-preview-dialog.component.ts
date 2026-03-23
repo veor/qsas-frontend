@@ -51,13 +51,13 @@ export class ApplicationPreviewDialogComponent {
 
   getCompleteAddress(): string {
     const addressParts = [
-      this.data.houseNo,
+      this.data.house_no,
       this.data.street,
       this.data.purok,
       this.data.barangay,
-      this.data.municipality,
-    ].filter(part => part && part.trim());
-    
+      this.data.municipality_name
+    ].filter(part => part && part.toString().trim());
+
     return addressParts.join(', ') || 'No address provided';
   }
 

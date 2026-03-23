@@ -5,7 +5,8 @@ import { Observable } from 'rxjs';
 
 // --- PRODUCTION ---
 // const API_URL = environment.apiUrl+'/qsas-backend/';
-// --- SSL ---
+
+// --- DEVELOPMENT SSL ---
 const API_URL = environment.apiUrl;
 
 export interface Question {
@@ -32,15 +33,19 @@ constructor(
 
   // Fetch questions from AssessmentController
   getAssessmentQuestions(): Observable<{ success: boolean; data: Question[] }> {
-    return this.http.get<{ success: boolean; data: Question[] }>(`${API_URL}/assessment/getQuestions`);
-    // return this.http.get<{ success: boolean; data: Question[] }>(`${API_URL}assessment/getQuestions`);
+    // DEVELOPMENT SSL
+    return this.http.get<{ success: boolean; data: Question[] }>(`${API_URL}/assessment/getQuestions`); 
+    // PRODUCTION
+    // return this.http.get<{ success: boolean; data: Question[] }>(`${API_URL}assessment/getQuestions`); 
 
   }
 
   // Store answers from AssessmentController
   saveAssessmentAnswers(application_ref_no: string, answers: any) {
-    return this.http.post(`${API_URL}/assessment/save`, {
-    // return this.http.post(`${API_URL}assessment/save`, {
+    // DEVELOPMENT SSL
+    return this.http.post(`${API_URL}/assessment/save`, { 
+    // PRODUCTION
+    // return this.http.post(`${API_URL}assessment/saveAssessmentAnswers`, { 
       application_ref_no,
       answers
     });

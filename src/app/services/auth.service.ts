@@ -5,7 +5,8 @@ import { environment } from '../../environments/environment.development';
 
 // --- PRODUCTION ---
 // const API_URL = environment.apiUrl+'/qsas-backend/';
-// --- SSL ---
+
+// --- DEVELOPMENT SSL ---
 const API_URL = environment.apiUrl;
 
 export interface LoginResponse {
@@ -46,8 +47,9 @@ export class AuthService {
 
   login(idNo: string, password: string): Observable<LoginResponse> {
     const loginData = { idNo, password };
-    
+    // DEVELOPMENT SSL
     return this.http.post<LoginResponse>(API_URL + `/auth/login`, loginData)
+    // PRODUCTION
     // return this.http.post<LoginResponse>(API_URL + `auth/login`, loginData)
       .pipe(
         tap(response => {
