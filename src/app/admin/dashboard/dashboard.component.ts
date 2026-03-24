@@ -145,73 +145,83 @@ export class DashboardComponent implements OnInit {
   //     }
   //   });
   // }
-ngOnInit(): void {
-  this.authService.currentUser$.subscribe(user => {
-    this.currentUser = user;
-  });
+  ngOnInit(): void {
+    this.authService.currentUser$.subscribe(user => {
+      this.currentUser = user;
+    });
 
-  this.adminService.getTopByCourse().subscribe({
-    next: (data) => { this.topByCourse = data; },
-    error: () => {}
-  });
+    this.adminService.getTopByCourse().subscribe({
+      next: (data) => { this.topByCourse = data; },
+      error: () => {}
+    });
 
-  // ← ADD THIS — was missing entirely
-  this.loadTopByMunicipality();
+    this.loadTopByMunicipality();
 
-  this.loaderService.show();
+    this.loaderService.show();
 
-  this.http.get<{ date: string }>('/api/server-date').subscribe({
-    next: (res) => {
-      this.currentDate = new Date(res.date).toLocaleDateString('en-US', {
-        year: 'numeric', month: 'long', day: 'numeric'
-      });
-    },
-    error: () => {
-      this.currentDate = new Date().toLocaleDateString('en-US', {
-        year: 'numeric', month: 'long', day: 'numeric'
-      });
-    }
-  });
+    this.http.get<{ date: string }>('/api/server-date').subscribe({
+      next: (res) => {
+        this.currentDate = new Date(res.date).toLocaleDateString('en-US', {
+          year: 'numeric', month: 'long', day: 'numeric'
+        });
+      },
+      error: () => {
+        this.currentDate = new Date().toLocaleDateString('en-US', {
+          year: 'numeric', month: 'long', day: 'numeric'
+        });
+      }
+    });
 
-  this.adminService.getScholarshipCounts().subscribe({
-    next: (counts) => {
-      this.scholarships = [
-        {
-          title: 'Application for Quezon Science High School Exam',
-          description: 'Apply now for the entrance exam at QSHS',
-          applicants: counts['Application for Quezon Science High School Exam'] ?? 0
-        },
-        {
-          title: 'One Family One College Graduate Scholarship',
-          description: 'Support for one college graduate per family',
-          applicants: counts['One Family One College Graduate Scholarship'] ?? 0
-        },
-        {
-          title: 'Priority Courses Scholarship',
-          description: 'Scholarship for students in priority courses',
-          applicants: counts['Priority Courses Scholarship'] ?? 0
-        },
-        {
-          title: 'STAN C',
-          description: 'A special scholarship program for excellence',
-          applicants: counts['STAN C'] ?? 0
-        }
-      ];
-      this.loaderService.hide();
-    },
-    error: () => { this.loaderService.hide(); }
-  });
-}
+    this.adminService.getScholarshipCounts().subscribe({
+      next: (counts) => {
+        this.scholarships = [
+          {
+            title: 'Application for Quezon Science High School Exam',
+            description: 'Apply now for the entrance exam at QSHS',
+            applicants: counts['Application for Quezon Science High School Exam'] ?? 0
+          },
+          {
+            title: 'One Family One College Graduate Scholarship',
+            description: 'Support for one college graduate per family',
+            applicants: counts['One Family One College Graduate Scholarship'] ?? 0
+          },
+          {
+            title: 'Priority Courses Scholarship',
+            description: 'Scholarship for students in priority courses',
+            applicants: counts['Priority Courses Scholarship'] ?? 0
+          },
+          {
+            title: 'STAN C',
+            description: 'A special scholarship program for excellence',
+            applicants: counts['STAN C'] ?? 0
+          }
+        ];
+        this.loaderService.hide();
+      },
+      error: () => { this.loaderService.hide(); }
+    });
+  }
 
   selectScholarship(scholarship: any) {
-    if (this.authService.hasPermission('applicantList.access')) {
+    if (!this.authService.hasPermission('applicantList.access')) {
+      this.toast.showError('You do not have permission to view the applicant list.');
+      return;
+    }
+
+    if (scholarship.title === 'Priority Courses Scholarship') {
+      this.router.navigate(['/admin/priority-courses-ranking']);
+    } else if (scholarship.title === 'One Family One College Graduate Scholarship') {
+      this.router.navigate(['/admin/one-poor-fam-ranking']);
+    }
+      else if (scholarship.title === 'STAN C') {
+      this.router.navigate(['/admin/stan-c-ranking']);
+    }
+    else {
       this.router.navigate(['/admin/applicantList'], {
         queryParams: { scholarship: scholarship.title }
       });
-    } else {
-        this.toast.showError('You do not have permission to view the applicant list.');
     }
-  }
+}
 
 // -- TOP 35 for Priority Courses 
   get availableCourses(): string[] {

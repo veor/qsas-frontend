@@ -158,9 +158,11 @@ export class ApplicantListComponent {
       data: {
         ...applicant,
         picture: applicant.picture ? (this.apiUrl + applicant.picture) : 'assets/default-avatar.png',
-        // picture: applicant.picture || 'assets/default-avatar.png', ///prod
+        ///prod
+        // picture: applicant.picture || 'assets/default-avatar.png', 
         grade_pdf: applicant.grade_pdf ? (this.apiUrl + applicant.grade_pdf) : null 
-        // grade_pdf: applicant.grade_pdf ?? null  //prod
+        ///prod
+        // grade_pdf: applicant.grade_pdf ?? null 
       }
     });
   }

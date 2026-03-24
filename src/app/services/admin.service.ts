@@ -169,9 +169,21 @@ export class AdminService {
   }
 
 // -- Top 35 Priority Courses
-  getTopByCourse(): Observable<{ application_ref_no: string; current_course: string; priority_weight: number | null }[]> {
+  getTopByCourse(): Observable<{ application_ref_no: string; current_course: string; priority_weight: number | null; name: string; civil_status: string; current_academic_status: string; municipality: string; }[]> {
     // return this.http.get<any[]>(API_URL + '/admin/getTopByCourseForPriorityCourses');
     return this.http.get<any[]>(API_URL + '/admin/top-by-course');
+  }
+  rejectPriorityApplicants(refNos: string[]): Observable<{
+    success: boolean;
+    message: string;
+    failed: string[];
+    failed_count: number;
+  }> {
+    return this.http.post<any>(
+      // API_URL + '/admin/rejectPriorityApplicants',
+      API_URL + '/admin/reject-priority-applicants',
+      { application_ref_nos: refNos }
+    );
   }
 // -- Top 35 1Poor and Stan C
   getTopByMunicipality(params: { page?: number; scholarship_type?: string; municipality?: string; }): Observable<{
@@ -191,6 +203,63 @@ export class AdminService {
     return this.http.get<any>(`${API_URL}/admin/top-by-municipality?${query.toString()}`);
     // PRODUCTION
     // return this.http.get<any>(`${API_URL}admin/getTopByMunicipality?${query.toString()}`);
+  }
+
+  getTopByOnePoorFam(): Observable<{
+    application_ref_no: string;
+    assessment_weight: number | null;
+    name: string;
+    civil_status: string;
+    current_academic_status: string;
+    age: number | null;
+    municipality: string;
+    fathers_profession: string | null;
+    mothers_profession: string | null;
+  }[]> {
+    // return this.http.get<any[]>(API_URL + '/admin/getTopByOnePoorFam');
+    return this.http.get<any[]>(API_URL + '/admin/top-by-one-poor-fam');
+  }
+
+  rejectOnePoorFamApplicants(refNos: string[]): Observable<{
+    success: boolean;
+    message: string;
+    failed: string[];
+    failed_count: number;
+  }> {
+    return this.http.post<any>(
+      // API_URL + '/admin/rejectOnePoorFamApplicants',
+      API_URL + '/admin/reject-one-poor-fam-applicants',
+      { application_ref_nos: refNos }
+    );
+  }
+
+  getTopByStanC(): Observable<{
+    application_ref_no: string;
+    assessment_weight: number | null;
+    name: string;
+    civil_status: string;
+    current_academic_status: string;
+    age: number | null;
+    municipality: string;
+    fathers_profession: string | null;
+    mothers_profession: string | null;
+  }[]> {
+    // return this.http.get<any[]>(API_URL + '/admin/getTopByStanC');
+    return this.http.get<any[]>(API_URL + '/admin/top-by-stan-c');
+  }
+
+
+  rejectStanCApplicants(refNos: string[]): Observable<{
+    success: boolean;
+    message: string;
+    failed: string[];
+    failed_count: number;
+  }> {
+    return this.http.post<any>(
+      // API_URL + '/admin/rejectOnePoorFamApplicants',
+      API_URL + '/admin/reject-stan-c-applicants',
+      { application_ref_nos: refNos }
+    );
   }
 
 }

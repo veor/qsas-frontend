@@ -14,6 +14,9 @@ import { AccessDeniedComponent } from './shared/access-denied/access-denied.comp
 import { AssessmentAccessGuard } from './services/assessment-access.guard';
 import { AdminAssessmentFormComponent } from './admin/admin-assessment-form/admin-assessment-form.component';
 import { ApplyIntroductionComponent } from './applicants/apply-introduction/apply-introduction.component';
+import { PriorityCoursesRankingComponent } from './admin/applicant-list/priority-courses-ranking/priority-courses-ranking.component';
+import { OnePoorFamRankingComponent } from './admin/applicant-list/one-poor-fam-ranking/one-poor-fam-ranking.component';
+import { StanCRankingComponent } from './admin/applicant-list/stan-c-ranking/stan-c-ranking.component';
 
 export const routes: Routes = [
   // Default route - redirects to dashboard if logged in, otherwise to login
@@ -63,6 +66,24 @@ export const routes: Routes = [
     canMatch: [AuthGuard, PermissionGuard],
     data: { permission: 'applicantList.access'}, 
     component: ApplicantListComponent,
+  },
+  {
+    path: 'admin/priority-courses-ranking',
+    canMatch: [AuthGuard, PermissionGuard],
+    data: { permission: 'applicantList.access'}, 
+    component: PriorityCoursesRankingComponent,
+  },
+  {
+    path: 'admin/one-poor-fam-ranking',
+    canMatch: [AuthGuard, PermissionGuard],
+    data: { permission: 'applicantList.access'}, 
+    component: OnePoorFamRankingComponent,
+  },
+  {
+    path: 'admin/stan-c-ranking',
+    canMatch: [AuthGuard, PermissionGuard],
+    data: { permission: 'applicantList.access'}, 
+    component: StanCRankingComponent,
   },
   {
     path: 'admin/assessment/:refNo',

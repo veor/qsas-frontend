@@ -1,0 +1,271 @@
+<div class="page-wrapper">
+
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="page-header-left">
+      <button class="back-btn" (click)="goBack()">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <div>
+        <h1 class="page-title">One Family One College Graduate Ranking</h1>
+        <p class="page-subtitle">Top applicants ranked by score per municipality</p>
+      </div>
+    </div>
+    <div class="page-header-right">
+      <span class="total-badge" *ngIf="!isLoading">
+        {{ filteredData.length }} applicant{{ filteredData.length !== 1 ? 's' : '' }}
+      </span>
+    </div>
+  </div>
+
+  <!-- Filter Bar -->
+  <div class="filter-bar">
+    <div class="filter-search-wrapper">
+      <mat-icon class="filter-search-icon">search</mat-icon>
+      <input
+        type="text"
+        placeholder="Search by name..."
+        class="filter-search"
+        [(ngModel)]="searchText"
+        (ngModelChange)="applyFilters()"
+      />
+    </div>
+
+    <select class="filter-select" [(ngModel)]="selectedMunicipality" (ngModelChange)="applyFilters()">
+      <option value="">All Municipalities</option>
+      <option *ngFor="let mun of availableMunicipalities" [value]="mun">{{ mun }}</option>
+    </select>
+
+    <button class="filter-clear-btn" *ngIf="hasActiveFilters" (click)="clearFilters()">
+      <mat-icon>close</mat-icon>
+      Clear filters
+    </button>
+
+    <div class="filter-bar-spacer"></div>
+
+    <button
+      class="export-btn"
+      *ngIf="!isLoading && filteredData.length > 0"
+      (click)="exportToExcel()"
+      title="Export to Excel">
+      <mat-icon>download</mat-icon>
+      Export
+    </button>
+  </div>
+
+  <!-- Rejection Action Bar -->
+  <div class="action-bar" *ngIf="rejectedCount > 0">
+    <div class="action-bar-left">
+      <mat-icon class="action-bar-icon">cancel</mat-icon>
+      <span class="action-bar-text">
+        <strong>{{ rejectedCount }}</strong> applicant{{ rejectedCount !== 1 ? 's' : '' }} marked for rejection
+      </span>
+    </div>
+    <div class="action-bar-right">
+      <button class="action-bar-clear"
+              (click)="clearRejections()"
+              [disabled]="isConfirmingRejection">
+        <mat-icon>undo</mat-icon>
+        Clear selection
+      </button>
+      <button class="action-bar-confirm"
+              (click)="confirmRejections()"
+              [disabled]="isConfirmingRejection">
+        <span *ngIf="!isConfirmingRejection" class="action-bar-confirm-inner">
+          <mat-icon>check_circle</mat-icon>
+          Confirm rejections
+        </span>
+        <span *ngIf="isConfirmingRejection" class="action-bar-confirm-inner">
+          <span class="confirm-spinner"></span>
+          Saving...
+        </span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="table-wrapper">
+
+    <div class="table-loading" *ngIf="isLoading">
+      <span class="loading-dot"></span>
+      <span class="loading-dot"></span>
+      <span class="loading-dot"></span>
+    </div>
+
+    <table class="ranking-table" *ngIf="!isLoading">
+      <thead>
+        <tr>
+          <th class="col-reject">
+          </th>
+          <th class="col-rank sortable" (click)="sortBy('rank')">#
+            <span class="sort-icon">
+              <mat-icon *ngIf="sortColumn !== 'rank'">unfold_more</mat-icon>
+              <mat-icon *ngIf="sortColumn === 'rank' && sortDirection === 'asc'">arrow_upward</mat-icon>
+              <mat-icon *ngIf="sortColumn === 'rank' && sortDirection === 'desc'">arrow_downward</mat-icon>
+            </span>
+          </th>
+          <th class="col-name sortable" (click)="sortBy('name')">Name
+            <span class="sort-icon">
+              <mat-icon *ngIf="sortColumn !== 'name'">unfold_more</mat-icon>
+              <mat-icon *ngIf="sortColumn === 'name' && sortDirection === 'asc'">arrow_upward</mat-icon>
+              <mat-icon *ngIf="sortColumn === 'name' && sortDirection === 'desc'">arrow_downward</mat-icon>
+            </span>
+          </th>
+          <th class="col-municipality sortable" (click)="sortBy('municipality')">Municipality
+            <span class="sort-icon">
+              <mat-icon *ngIf="sortColumn !== 'municipality'">unfold_more</mat-icon>
+              <mat-icon *ngIf="sortColumn === 'municipality' && sortDirection === 'asc'">arrow_upward</mat-icon>
+              <mat-icon *ngIf="sortColumn === 'municipality' && sortDirection === 'desc'">arrow_downward</mat-icon>
+            </span>
+          </th>
+          <th class="col-score sortable" (click)="sortBy('assessment_weight')">Score
+            <span class="sort-icon">
+              <mat-icon *ngIf="sortColumn !== 'assessment_weight'">unfold_more</mat-icon>
+              <mat-icon *ngIf="sortColumn === 'assessment_weight' && sortDirection === 'asc'">arrow_upward</mat-icon>
+              <mat-icon *ngIf="sortColumn === 'assessment_weight' && sortDirection === 'desc'">arrow_downward</mat-icon>
+            </span>
+          </th>
+          <th class="col-age sortable" (click)="sortBy('age')">
+            Age <span class="excl-badge">Excl.</span>
+            <span class="sort-icon">
+              <mat-icon *ngIf="sortColumn !== 'age'">unfold_more</mat-icon>
+              <mat-icon *ngIf="sortColumn === 'age' && sortDirection === 'asc'">arrow_upward</mat-icon>
+              <mat-icon *ngIf="sortColumn === 'age' && sortDirection === 'desc'">arrow_downward</mat-icon>
+            </span>
+          </th>
+          <th class="col-civil sortable" (click)="sortBy('civil_status')">
+            Civil Status <span class="excl-badge">Excl.</span>
+            <span class="sort-icon">
+              <mat-icon *ngIf="sortColumn !== 'civil_status'">unfold_more</mat-icon>
+              <mat-icon *ngIf="sortColumn === 'civil_status' && sortDirection === 'asc'">arrow_upward</mat-icon>
+              <mat-icon *ngIf="sortColumn === 'civil_status' && sortDirection === 'desc'">arrow_downward</mat-icon>
+            </span>
+          </th>
+          <th class="col-profession sortable" (click)="sortBy('fathers_profession')">
+            Father's Profession
+            <span class="sort-icon">
+                <mat-icon *ngIf="sortColumn !== 'fathers_profession'">unfold_more</mat-icon>
+                <mat-icon *ngIf="sortColumn === 'fathers_profession' && sortDirection === 'asc'">arrow_upward</mat-icon>
+                <mat-icon *ngIf="sortColumn === 'fathers_profession' && sortDirection === 'desc'">arrow_downward</mat-icon>
+            </span>
+            </th>
+            <th class="col-profession sortable" (click)="sortBy('mothers_profession')">
+            Mother's Profession
+            <span class="sort-icon">
+                <mat-icon *ngIf="sortColumn !== 'mothers_profession'">unfold_more</mat-icon>
+                <mat-icon *ngIf="sortColumn === 'mothers_profession' && sortDirection === 'asc'">arrow_upward</mat-icon>
+                <mat-icon *ngIf="sortColumn === 'mothers_profession' && sortDirection === 'desc'">arrow_downward</mat-icon>
+            </span>
+            </th>
+          <th class="col-academic sortable" (click)="sortBy('current_academic_status')">Academic Standing
+            <span class="sort-icon">
+              <mat-icon *ngIf="sortColumn !== 'current_academic_status'">unfold_more</mat-icon>
+              <mat-icon *ngIf="sortColumn === 'current_academic_status' && sortDirection === 'asc'">arrow_upward</mat-icon>
+              <mat-icon *ngIf="sortColumn === 'current_academic_status' && sortDirection === 'desc'">arrow_downward</mat-icon>
+            </span>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          *ngFor="let item of paginatedData; let i = index"
+          [class.row-gold]="(currentPage - 1) * itemsPerPage + i === 0 && !isExcluded(item) && !isRejected(item.application_ref_no)"
+          [class.row-silver]="(currentPage - 1) * itemsPerPage + i === 1 && !isExcluded(item) && !isRejected(item.application_ref_no)"
+          [class.row-bronze]="(currentPage - 1) * itemsPerPage + i === 2 && !isExcluded(item) && !isRejected(item.application_ref_no)"
+          [class.row-excluded]="isExcluded(item) && !isRejected(item.application_ref_no)"
+          [class.row-rejected]="isRejected(item.application_ref_no)"
+        >
+          <td class="col-reject">
+            <label class="reject-checkbox-wrapper"
+                   [title]="isRejected(item.application_ref_no) ? 'Unmark rejection' : 'Mark for rejection'">
+              <input
+                type="checkbox"
+                class="reject-checkbox"
+                [checked]="isRejected(item.application_ref_no)"
+                (change)="toggleRejected(item.application_ref_no)"
+              />
+              <span class="reject-checkmark"></span>
+            </label>
+          </td>
+          <td class="col-rank">
+            <span class="rank-number"
+              [class.rank-medal]="(currentPage - 1) * itemsPerPage + i < 3 && !isExcluded(item) && !isRejected(item.application_ref_no)">
+              {{ (currentPage - 1) * itemsPerPage + i + 1 }}
+            </span>
+          </td>
+          <td class="col-name">
+            {{ item.name || '—' }}
+            <span class="excluded-tag" *ngIf="isExcluded(item) && !isRejected(item.application_ref_no)">Excluded</span>
+            <span class="rejected-tag" *ngIf="isRejected(item.application_ref_no)">Rejected</span>
+          </td>
+          <td class="col-municipality">{{ item.municipality || '—' }}</td>
+          <td class="col-score">
+            <span class="score-pill score-pill--teal">
+              {{ item.assessment_weight !== null ? (item.assessment_weight | number:'1.2-2') : '—' }}
+            </span>
+          </td>
+          <td class="col-age">
+            <span class="excl-value" [class.excl-value--flagged]="isAgeExcluded(item.age)">
+              {{ item.age ?? '—' }}
+            </span>
+            <mat-icon class="excl-icon" *ngIf="isAgeExcluded(item.age)" title="Age exceeds 30">warning</mat-icon>
+          </td>
+          <td class="col-civil">
+            <span class="excl-value" [class.excl-value--flagged]="isCivilStatusExcluded(item.civil_status)">
+              {{ item.civil_status || '—' }}
+            </span>
+            <mat-icon class="excl-icon" *ngIf="isCivilStatusExcluded(item.civil_status)" title="Civil status not allowed">warning</mat-icon>
+          </td>
+          <td class="col-profession">
+            <span class="profession-tag profession-tag--father">
+                {{ item.fathers_profession || '—' }}
+            </span>
+            </td>
+            <td class="col-profession">
+            <span class="profession-tag profession-tag--mother">
+                {{ item.mothers_profession || '—' }}
+            </span>
+            </td>
+          <td class="col-academic">
+            <span class="status-badge" [ngClass]="getAcademicStatusClass(item.current_academic_status)">
+              {{ getAcademicLabel(item.current_academic_status) }}
+            </span>
+          </td>
+        </tr>
+
+        <tr *ngIf="filteredData.length === 0">
+          <td colspan="8" class="table-empty">
+            <mat-icon>inbox</mat-icon>
+            <p>{{ hasActiveFilters ? 'No results match your filters' : 'No data available yet' }}</p>
+            <button class="filter-clear-btn" *ngIf="hasActiveFilters" (click)="clearFilters()">
+              Clear filters
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination -->
+  <div class="pagination-bar" *ngIf="!isLoading && filteredData.length > 0">
+    <span class="pagination-count">
+      {{ (currentPage - 1) * itemsPerPage + 1 }}–{{ currentPage * itemsPerPage > filteredData.length ? filteredData.length : currentPage * itemsPerPage }}
+      of {{ filteredData.length }}
+    </span>
+    <div class="pagination-controls">
+      <button class="pg-btn" [disabled]="currentPage === 1" (click)="currentPage = currentPage - 1">
+        <mat-icon>chevron_left</mat-icon>
+      </button>
+      <select class="pg-select" [(ngModel)]="currentPage">
+        <option *ngFor="let p of pageNumbers" [value]="p">{{ p }}</option>
+      </select>
+      <span class="pg-of">of {{ totalPages }}</span>
+      <button class="pg-btn"
+              [disabled]="currentPage === totalPages || totalPages === 0"
+              (click)="currentPage = currentPage + 1">
+        <mat-icon>chevron_right</mat-icon>
+      </button>
+    </div>
+  </div>
+
+</div>

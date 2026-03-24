@@ -1,4 +1,4 @@
-<h2 mat-dialog-title class="dialog-title">
+<!-- <h2 mat-dialog-title class="dialog-title">
   Confirm Scholarship Application
 </h2>
 
@@ -9,6 +9,57 @@
     You are about to apply for the following scholarship:
   </p>
 
+  <div class="scholarship-card">
+    <div>
+      <div class="label">Selected Program:</div>
+      <div class="title">{{ data.title }}</div>
+    </div>
+
+    <div *ngIf="data.courses.length > 0" class="course-selection">
+      <label for="priority-course-search">Select Your Course:</label>
+
+      <input
+        id="priority-course-search"
+        type="text"
+        placeholder="Search course..."
+        [(ngModel)]="courseSearch"
+        class="search-input"
+      />
+
+      <ul class="course-list">
+        <li
+          *ngFor="let course of filteredCourses()"
+          [class.selected]="course === selectedCourse"
+          (click)="selectCourse(course)"
+        >
+          {{ course }}
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <mat-dialog-actions align="end" class="dialog-actions">
+    <button mat-button class="cancel-btn" (click)="cancel()">Cancel</button>
+    this button is commented out currently using the one with the course 
+    <button
+      mat-raised-button
+      color="primary"
+      class="confirm-btn"
+      (click)="confirm()"
+      [disabled]="!selectedCourse"
+    >
+    <button
+      mat-raised-button
+      color="primary"
+      class="confirm-btn"
+      (click)="confirm()"
+      [disabled]="data.courses.length > 0 && !selectedCourse"
+      >
+      <mat-icon>check_circle</mat-icon>
+      Confirm Application
+    </button>
+  </mat-dialog-actions>
+  this is commented out im using the one with course 
   <div class="scholarship-card">
     <div>
       <div class="label">Selected Program:</div>
@@ -25,5 +76,84 @@
   <button mat-raised-button color="primary" class="confirm-btn" (click)="confirm()">
     <mat-icon>check_circle</mat-icon>
     Confirm Application
+  </button>
+</mat-dialog-actions> -->
+
+<div mat-dialog-title class="dialog-header">
+  <div class="dialog-header-icon">
+    <mat-icon>school</mat-icon>
+  </div>
+  <div>
+    <h2 class="dialog-title">Confirm scholarship application</h2>
+    <p class="dialog-subtitle">Review your selection before submitting</p>
+  </div>
+</div>
+
+<mat-divider></mat-divider>
+
+<mat-dialog-content class="dialog-content">
+  <div class="program-card">
+    <span class="program-label">Selected program</span>
+    <span class="program-title">{{ data.title }}</span>
+  </div>
+
+  <div *ngIf="data.courses.length > 0" class="course-selection">
+    <label class="course-label">Select your course</label>
+
+    <div class="dropdown-wrapper" [class.open]="dropdownOpen">
+      <div class="dropdown-trigger" (click)="toggleDropdown()">
+        <span [class.placeholder]="!selectedCourse">
+          {{ selectedCourse || 'Choose a course...' }}
+        </span>
+        <mat-icon class="chevron">expand_more</mat-icon>
+      </div>
+
+      <div class="dropdown-panel" *ngIf="dropdownOpen">
+        <div class="search-wrapper">
+          <mat-icon class="search-icon">search</mat-icon>
+          <input
+            #searchInput
+            type="text"
+            placeholder="Search courses..."
+            [(ngModel)]="courseSearch"
+            class="search-input"
+            (click)="$event.stopPropagation()"
+          />
+        </div>
+        <ul class="course-list">
+          <li *ngIf="filteredCourses().length === 0" class="no-results">
+            No courses found
+          </li>
+          <li
+            *ngFor="let course of filteredCourses()"
+            [class.selected]="course === selectedCourse"
+            (click)="selectCourse(course)"
+          >
+            {{ course }}
+            <mat-icon *ngIf="course === selectedCourse" class="check-icon">check</mat-icon>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div *ngIf="selectedCourse" class="selected-badge">
+      <mat-icon>check_circle</mat-icon>
+      {{ selectedCourse }}
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-divider></mat-divider>
+
+<mat-dialog-actions align="end" class="dialog-actions">
+  <button mat-button class="cancel-btn" (click)="cancel()">Cancel</button>
+  <button
+    mat-raised-button
+    class="confirm-btn"
+    (click)="confirm()"
+    [disabled]="data.courses.length > 0 && !selectedCourse"
+  >
+    <mat-icon>check</mat-icon>
+    Confirm application
   </button>
 </mat-dialog-actions>

@@ -21,9 +21,10 @@ const FORM_DOWNLOADS: Record<string, string> = {
     : 'https://localhost/qsas/qsas-backend/files/qshs-exam-form.pdf',
 
   'one-family-scholarship': environment.production
-    ? 'https://qsas.quezon.gov.ph/qsas-backend/public/files/one-family-scholarship-form.pdf'
+    ? 'https://qsas.quezon.gov.ph/qsas-backend/public/files/1pf1cg-form.pdf'
     : 'https://localhost/qsas/qsas-backend/files/1pf1cg-form.pdf',
 };
+
 
 interface Scholarship {
   id: string;
@@ -80,6 +81,29 @@ export class ScholarshipSelectionComponent {
     }
   ];
 
+  PRIORITY_COURSES = [
+    'Doctor of Medicine',
+    'Doctor of Veterinary Medicine',
+    'BS Medicine Technology/Medical Laboratory',
+    'BS Midwifery',
+    'BS Nursing',
+    'BS Nutrition and Dietetics',
+    'BS Occupational Therapy',
+    'BS Pharmacy',
+    'BS Physical Therapy',
+    'BS Radiologic Technology',
+    'BS Respiratory Therapy',
+    'BS Speech and Language Pathology',
+    'BS Social Work',
+    'Teacher Education: Special Needs Education',
+    'BS Chemistry',
+    'BS Geology',
+    'BS Meteorology',
+    'BS Biomedical Engineering',
+    'BS Agricultural and Biosystems Engineering',
+    'BS Food Technology'
+  ];
+
   constructor(
     private router: Router,
     private dialog: MatDialog
@@ -124,7 +148,11 @@ export class ScholarshipSelectionComponent {
 
       const dialogRef = this.dialog.open(ScholarshipConfirmationDialogComponent, {
         width: '400px',
-        data: { title: scholarship.title },
+        // data: { title: scholarship.title },
+        data: { 
+          title: scholarship.title,
+          courses: scholarship.id === 'priority-courses' ? this.PRIORITY_COURSES : [] 
+        },
         disableClose: true
       });
 
@@ -134,7 +162,8 @@ export class ScholarshipSelectionComponent {
         this.loader.show();
 
         this.applicantService
-          .updateScholarshipType(this.applicationRefNo, scholarship.title)
+          // .updateScholarshipType(this.applicationRefNo, scholarship.title)
+          .updateScholarshipType(this.applicationRefNo, scholarship.title, result)
           .subscribe({
             next: () => {
               this.loader.hide();

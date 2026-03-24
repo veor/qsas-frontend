@@ -102,13 +102,19 @@ constructor(private http: HttpClient) {}
     // return this.http.get(`${API_URL}applicant/getAssessmentAnswers/${application_ref_no}`);
   }
 
-  updateScholarshipType(applicationRefNo: string, scholarshipType: string) {
+  // updateScholarshipType(applicationRefNo: string, scholarshipType: string) {
+  updateScholarshipType(
+    applicationRefNo: string,
+    scholarshipType: string,
+    priorityCourse?: string 
+  ) {
     // DEVELOPMENT SSL
     return this.http.post(`${API_URL}/applicant/applyScholarship`, {
     // PRODUCTION
     // return this.http.post(`${API_URL}applicant/applyScholarship`, {
       applicationRefNo,
-      scholarshipType
+      scholarshipType,
+      ...(priorityCourse ? { priorityCourse } : {}) 
     });
   }
 
