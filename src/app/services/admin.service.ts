@@ -170,7 +170,7 @@ export class AdminService {
 
 // -- Top 35 Priority Courses
   getTopByCourse(): Observable<{ application_ref_no: string; current_course: string; priority_weight: number | null; name: string; civil_status: string; current_academic_status: string; municipality: string; }[]> {
-    // return this.http.get<any[]>(API_URL + '/admin/getTopByCourseForPriorityCourses');
+    // return this.http.get<any[]>(API_URL + 'admin/getTopByCourseForPriorityCourses');
     return this.http.get<any[]>(API_URL + '/admin/top-by-course');
   }
   rejectPriorityApplicants(refNos: string[]): Observable<{
@@ -180,7 +180,7 @@ export class AdminService {
     failed_count: number;
   }> {
     return this.http.post<any>(
-      // API_URL + '/admin/rejectPriorityApplicants',
+      // API_URL + 'admin/rejectPriorityApplicants',
       API_URL + '/admin/reject-priority-applicants',
       { application_ref_nos: refNos }
     );
@@ -216,7 +216,7 @@ export class AdminService {
     fathers_profession: string | null;
     mothers_profession: string | null;
   }[]> {
-    // return this.http.get<any[]>(API_URL + '/admin/getTopByOnePoorFam');
+    // return this.http.get<any[]>(API_URL + 'admin/getTopByOnePoorFam');
     return this.http.get<any[]>(API_URL + '/admin/top-by-one-poor-fam');
   }
 
@@ -227,7 +227,7 @@ export class AdminService {
     failed_count: number;
   }> {
     return this.http.post<any>(
-      // API_URL + '/admin/rejectOnePoorFamApplicants',
+      // API_URL + 'admin/rejectOnePoorFamApplicants',
       API_URL + '/admin/reject-one-poor-fam-applicants',
       { application_ref_nos: refNos }
     );
@@ -244,7 +244,7 @@ export class AdminService {
     fathers_profession: string | null;
     mothers_profession: string | null;
   }[]> {
-    // return this.http.get<any[]>(API_URL + '/admin/getTopByStanC');
+    // return this.http.get<any[]>(API_URL + 'admin/getTopByStanC');
     return this.http.get<any[]>(API_URL + '/admin/top-by-stan-c');
   }
 
@@ -256,10 +256,35 @@ export class AdminService {
     failed_count: number;
   }> {
     return this.http.post<any>(
-      // API_URL + '/admin/rejectOnePoorFamApplicants',
+      // API_URL + 'admin/rejectOnePoorFamApplicants',
       API_URL + '/admin/reject-stan-c-applicants',
       { application_ref_nos: refNos }
     );
+  }
+
+  exportSHSTopByCourse(): Observable<{
+    application_ref_no: string;
+    name: string;
+    course_applied: string;
+    age: number | null;
+    civil_status: string;
+    contact: string;
+    email: string;
+    current_academic_status: string;
+    municipality: string;
+    priority_weight: number | null;
+  }[]> {
+    // return this.http.get<any[]>(API_URL + 'admin/exportSHSTopByCourse');
+    return this.http.get<any[]>(API_URL + '/admin/export-shs-top-by-course');
+  }
+
+  exportOnePoorFamAll(): Observable<any[]> {
+    // return this.http.get<any[]>(API_URL + '/admin/exportOnePoorFamAll');
+    return this.http.get<any[]>(API_URL + '/admin/export-one-poor-fam-all');
+  }
+  exportSTANCAll(): Observable<any[]> {
+    // return this.http.get<any[]>(API_URL + '/admin/exportSTANCAll');
+    return this.http.get<any[]>(API_URL + '/admin/export-stan-c-all');
   }
 
 }

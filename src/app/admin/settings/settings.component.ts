@@ -23,6 +23,7 @@ import { LoaderService } from '../../services/loader.service';
 import { EditUserDialogComponent } from './edit-user-dialog/edit-user-dialog.component';
 import { environment } from '../../../environments/environment.development';
 import { AssessmentBuilderComponent } from "./assessment-builder/assessment-builder.component";
+import { ApplicantService } from '../../services/applicant.service';
 
 @Component({
   selector: 'app-settings',
@@ -52,7 +53,8 @@ export class SettingsComponent {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   API_URL = environment.apiUrl; 
   private authService = inject(AuthService);
-  
+  private applicantService = inject (ApplicantService);
+
   userForm: FormGroup;
   passwordForm: FormGroup;
   
@@ -88,6 +90,9 @@ export class SettingsComponent {
   displayedColumns: string[] = ['idNumber', 'name', 'designation', 'phone', 'permissions', 'actions'];
   selectedAvatar: File | null = null;
   selectedAvatarPreview: string | ArrayBuffer | null = null;
+  districts: { id: number, name: string }[] = [];
+  allMunicipalities: { id: number, district_id: number, name: string, points: number }[] = [];
+  filteredMunicipalitiesForUser: { id: number, district_id: number, name: string, points: number }[] = []; 
   constructor(
     private fb: FormBuilder,
     private adminService: AdminService,
@@ -103,6 +108,8 @@ export class SettingsComponent {
       designation: [''],
       phone: ['', [Validators.pattern(/^\+?[\d\s-()]+$/)]],
       password: ['', [Validators.required, this.passwordValidator]],
+      district: [null],     
+      municipality: [null],
     });
 
     this.passwordForm = this.fb.group({
@@ -133,9 +140,22 @@ export class SettingsComponent {
     return this.authService.hasPermission('assessment.manage');
   }
 
+  // ngOnInit() {
+  //   this.loadUsers();
+  //   this.loadCurrentUserPermissions();
+  // }
   ngOnInit() {
     this.loadUsers();
     this.loadCurrentUserPermissions();
+
+    // Load districts and municipalities
+    this.applicantService.getDistrictsAndMunicipalities().subscribe({
+      next: (res) => {
+        this.districts = res.districts;
+        this.allMunicipalities = res.municipalities;
+      },
+      error: () => this.toast.showError('Failed to load districts/municipalities')
+    });
   }
 
   ngAfterViewInit() {
@@ -208,40 +228,82 @@ export class SettingsComponent {
   }
 
   // --- Create User ---
-  onSubmit() {
-    if (this.userForm.valid) {
-      const formData = new FormData();
+  // onSubmit() {
+  //   if (this.userForm.valid) {
+  //     const formData = new FormData();
 
-      Object.keys(this.userForm.value).forEach(key => {
-        formData.append(key, this.userForm.value[key]);
-      });
+  //     Object.keys(this.userForm.value).forEach(key => {
+  //       formData.append(key, this.userForm.value[key]);
+  //     });
 
-      // permissions
-      formData.append('permissions', JSON.stringify(this.newUserPermissions));
+  //     formData.append('permissions', JSON.stringify(this.newUserPermissions));
 
-      // avatar if selected
-      if (this.selectedAvatar) {
-        formData.append('avatar', this.selectedAvatar);
+  //     if (this.selectedAvatar) {
+  //       formData.append('avatar', this.selectedAvatar);
+  //     }
+
+  //     this.loaderService.show();
+  //     this.adminService.addUser(formData).subscribe({
+  //       next: (res) => {
+  //         this.toast.showSuccess(res.message || 'User created successfully');
+  //         this.userForm.reset();
+  //         this.newUserPermissions = [];
+  //         this.selectedAvatar = null;
+  //         this.selectedAvatarPreview = null;
+  //         this.loadUsers();
+  //         this.loaderService.hide();
+  //       },
+  //       error: (err) => {
+  //         this.toast.showError(err.error?.message || 'Failed to create user');
+  //         this.loaderService.hide();
+  //       }
+  //     });
+  //   }
+  // }
+onSubmit() {
+  if (this.userForm.valid) {
+    const formData = new FormData();
+
+    Object.keys(this.userForm.value).forEach(key => {
+      const value = this.userForm.value[key];
+      if (value !== null && value !== undefined) {
+        formData.append(key, value);
       }
+    });
 
-      this.loaderService.show();
-      this.adminService.addUser(formData).subscribe({
-        next: (res) => {
-          this.toast.showSuccess(res.message || 'User created successfully');
-          this.userForm.reset();
-          this.newUserPermissions = [];
-          this.selectedAvatar = null;
-          this.selectedAvatarPreview = null;
-          this.loadUsers();
-          this.loaderService.hide();
-        },
-        error: (err) => {
-          this.toast.showError(err.error?.message || 'Failed to create user');
-          this.loaderService.hide();
-        }
-      });
+    // Explicitly append district and municipality even if 0
+    const district = this.userForm.get('district')?.value;
+    const municipality = this.userForm.get('municipality')?.value;
+    if (district) formData.append('district', district);
+    if (municipality) formData.append('municipality', municipality);
+
+    // permissions
+    formData.append('permissions', JSON.stringify(this.newUserPermissions));
+
+    // avatar if selected
+    if (this.selectedAvatar) {
+      formData.append('avatar', this.selectedAvatar);
     }
+
+    this.loaderService.show();
+    this.adminService.addUser(formData).subscribe({
+      next: (res) => {
+        this.toast.showSuccess(res.message || 'User created successfully');
+        this.userForm.reset();
+        this.newUserPermissions = [];
+        this.selectedAvatar = null;
+        this.selectedAvatarPreview = null;
+        this.filteredMunicipalitiesForUser = [];
+        this.loadUsers();
+        this.loaderService.hide();
+      },
+      error: (err) => {
+        this.toast.showError(err.error?.message || 'Failed to create user');
+        this.loaderService.hide();
+      }
+    });
   }
+}
 
   // --- Change Password ---
   onChangePassword() {
@@ -377,4 +439,12 @@ export class SettingsComponent {
       reader.readAsDataURL(this.selectedAvatar);
     }
   }
+
+  onUserDistrictChange(districtId: number) {
+    this.filteredMunicipalitiesForUser = this.allMunicipalities.filter(
+      m => m.district_id === +districtId
+    );
+    this.userForm.patchValue({ municipality: null });
+  }
+
 }

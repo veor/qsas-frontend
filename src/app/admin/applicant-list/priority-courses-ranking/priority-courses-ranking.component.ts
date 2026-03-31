@@ -270,6 +270,57 @@ export class PriorityCoursesRankingComponent implements OnInit {
     XLSX.writeFile(workbook, `priority-courses-ranking-${timestamp}.xlsx`);
   }
 
+  exportSHSTopToExcel(): void {
+    this.adminService.exportSHSTopByCourse().subscribe({
+      next: (data) => {
+        const academicMap: { [key: string]: string } = {
+          '1': 'Graduating SHS',
+          '2': 'Graduate of SHS',
+        };
+
+        const exportData = data.map((item, index) => ({
+          '#':                    index + 1,
+          'Application Ref No':   item.application_ref_no,
+          'Name':                 item.name,
+          'Course Applied':       item.course_applied,
+          'Age':                  item.age ?? '—',
+          'Civil Status':         item.civil_status,
+          'Contact No':           item.contact,
+          'Email':                item.email,
+          'Academic Standing':    academicMap[String(item.current_academic_status)] ?? '—',
+          'Municipality':         item.municipality,
+          'Score':                item.priority_weight !== null
+                                    ? parseFloat(String(item.priority_weight)).toFixed(2)
+                                    : '—',
+        }));
+
+        const worksheet = XLSX.utils.json_to_sheet(exportData);
+        worksheet['!cols'] = [
+          { wch: 5  },  // #
+          { wch: 20 },  // Application Ref No
+          { wch: 30 },  // Name
+          { wch: 35 },  // Course Applied
+          { wch: 8  },  // Age
+          { wch: 15 },  // Civil Status
+          { wch: 15 },  // Contact No
+          { wch: 25 },  // Email
+          { wch: 20 },  // Academic Standing
+          { wch: 20 },  // Municipality
+          { wch: 10 },  // Score
+        ];
+
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, 'SHS Top 100 Per Course');
+
+        const timestamp = new Date().toISOString().slice(0, 10);
+        XLSX.writeFile(workbook, `shs-top100-per-course-${timestamp}.xlsx`);
+      },
+      error: () => {
+        this.toast.showError('Failed to export data.');
+      }
+    });
+  }
+
   get rejectedCount(): number {
     return this.rejectedApplicants.size;
   }

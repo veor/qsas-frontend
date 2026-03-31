@@ -3,7 +3,6 @@
 </h2>
 
 <div mat-dialog-content>
-
 <form [formGroup]="editForm" class="edit-form">
 
   <!-- PERSONAL INFO -->
@@ -58,6 +57,7 @@
       </mat-select>
     </mat-form-field>
 
+    <!-- No. of Children — loaded from num_children -->
     <mat-form-field appearance="outline">
       <mat-label>No. of Children</mat-label>
       <mat-select formControlName="children">
@@ -76,22 +76,22 @@
     <h3>Family Information</h3>
 
     <mat-form-field appearance="outline">
-      <mat-label>Father’s First Name</mat-label>
+      <mat-label>Father's First Name</mat-label>
       <input matInput formControlName="father_first" />
     </mat-form-field>
 
     <mat-form-field appearance="outline">
-      <mat-label>Father’s Last Name</mat-label>
+      <mat-label>Father's Last Name</mat-label>
       <input matInput formControlName="father_last" />
     </mat-form-field>
 
     <mat-form-field appearance="outline">
-      <mat-label>Mother’s First Name</mat-label>
+      <mat-label>Mother's First Name</mat-label>
       <input matInput formControlName="mother_first" />
     </mat-form-field>
 
     <mat-form-field appearance="outline">
-      <mat-label>Mother’s Last Name</mat-label>
+      <mat-label>Mother's Last Name</mat-label>
       <input matInput formControlName="mother_last" />
     </mat-form-field>
   </div>
@@ -111,7 +111,7 @@
     </mat-form-field>
   </div>
 
-  <!-- ADDRESS  -->
+  <!-- ADDRESS -->
   <div class="section">
     <h3>Address Information</h3>
 
@@ -130,17 +130,19 @@
       <input matInput formControlName="purok" />
     </mat-form-field>
 
+    <!-- District — loaded from API, value bound to ID -->
     <mat-form-field appearance="outline">
       <mat-label>District</mat-label>
       <mat-select formControlName="district" (selectionChange)="onDistrictChange($event.value)">
-        <mat-option *ngFor="let d of districts" [value]="d">{{ d }}</mat-option>
+        <mat-option *ngFor="let d of districts" [value]="d.id">{{ d.name }}</mat-option>
       </mat-select>
     </mat-form-field>
 
+    <!-- Municipality — filtered by selected district, value bound to ID -->
     <mat-form-field appearance="outline">
       <mat-label>Municipality</mat-label>
       <mat-select formControlName="municipality" (selectionChange)="onMunicipalityChange($event.value)">
-        <mat-option *ngFor="let m of filteredMunicipalities" [value]="m">{{ m }}</mat-option>
+        <mat-option *ngFor="let m of filteredMunicipalities" [value]="m.id">{{ m.name }}</mat-option>
       </mat-select>
     </mat-form-field>
 
@@ -150,7 +152,7 @@
     </mat-form-field>
   </div>
 
-  <!-- APPLICANT'S COURSE  -->
+  <!-- COURSE INFO -->
   <div class="section">
     <h3>Course Information</h3>
 
@@ -158,8 +160,8 @@
       <mat-label>Applicant Course</mat-label>
       <input matInput formControlName="applicant_course" />
     </mat-form-field>
-    
-    <mat-form-field appearance="outline">
+
+    <!-- <mat-form-field appearance="outline">
       <mat-label>Current Academic Status</mat-label>
       <mat-select formControlName="current_academic_status">
         <mat-option value="1">First Year</mat-option>
@@ -169,11 +171,17 @@
         <mat-option value="5">Fourth Year (Graduating Student)</mat-option>
         <mat-option value="6">Fifth Year (Graduating Student)</mat-option>
       </mat-select>
-    </mat-form-field>
+    </mat-form-field> -->
 
+    <!-- Current Course — disabled with placeholder if empty -->
     <mat-form-field appearance="outline">
       <mat-label>Current Course</mat-label>
-      <input matInput formControlName="current_course" />
+      <input
+        matInput
+        formControlName="current_course"
+        [placeholder]="isCurrentCourseEmpty ? 'Not applicable' : ''"
+      />
+      <mat-hint *ngIf="isCurrentCourseEmpty">No current course on record</mat-hint>
     </mat-form-field>
 
     <mat-form-field appearance="outline">
@@ -181,32 +189,30 @@
       <input matInput formControlName="current_school" />
     </mat-form-field>
 
-    <mat-form-field appearance="outline">
-      <mat-label>School Location</mat-label>
-      <input matInput formControlName="school_location" />
-    </mat-form-field>
+    <!-- school_location removed -->
+
   </div>
 
   <!-- SECURITY -->
-  <div class="section full-width">
+  <!-- <div class="section full-width">
     <h3>Security</h3>
 
     <mat-form-field appearance="outline">
       <mat-label>Secret Question</mat-label>
-      <input matInput formControlName="secret_question"/>
+      <input matInput formControlName="secret_question" />
     </mat-form-field>
 
     <mat-form-field appearance="outline">
       <mat-label>Secret Answer</mat-label>
-      <input matInput [type]="hideSecret ? 'password' : 'text'" formControlName="secret_answer"/>
+      <input matInput [type]="hideSecret ? 'password' : 'text'" formControlName="secret_answer" />
       <button mat-icon-button matSuffix type="button" (click)="toggleSecretVisibility()">
         <mat-icon>{{ hideSecret ? 'visibility_off' : 'visibility' }}</mat-icon>
       </button>
     </mat-form-field>
-  </div>
+  </div> -->
 
   <!-- DOCUMENTS -->
-  <div class="section full-width">
+  <!-- <div class="section full-width">
     <h3>Profile Picture</h3>
     <div class="upload-box">
       <input type="file" (change)="onFileSelected($event)" />
@@ -215,7 +221,7 @@
     <div class="upload-box">
       <input type="file" (change)="onGradeFileSelected($event)" />
     </div>
-  </div>
+  </div> -->
 
 </form>
 </div>

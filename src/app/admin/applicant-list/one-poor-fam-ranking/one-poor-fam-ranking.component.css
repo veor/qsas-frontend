@@ -823,12 +823,22 @@ th.sortable:has(.sort-icon mat-icon:not([ng-reflect-ng-if="false"])) .sort-icon 
   height: 16px;
 }
 
-.col-profession {
-  min-width: 160px;
-  max-width: 200px;
+.export-btn--all {
+  background-color: #e8f5e9;
+  color: #1b5e20;
+  border-color: #a5d6a7;
 }
 
-.profession-tag {
+.export-btn--all:hover {
+  background-color: #c8e6c9;
+}
+
+.col-sibling {
+  min-width: 160px;
+  max-width: 220px;
+}
+
+.sibling-tag {
   display: inline-flex;
   align-items: center;
   font-size: 12px;
@@ -841,14 +851,14 @@ th.sortable:has(.sort-icon mat-icon:not([ng-reflect-ng-if="false"])) .sort-icon 
   line-height: 1.4;
 }
 
-.profession-tag--father {
+.sibling-tag--college {
   background: rgba(59, 130, 246, 0.1);
   color: #2563eb;
 }
 
-.profession-tag--mother {
-  background: rgba(139, 92, 246, 0.1);
-  color: #7c3aed;
+.sibling-tag--graduated {
+  background: rgba(16, 185, 129, 0.1);
+  color: #059669;
 }
 
 /* ── Responsive ── */

@@ -51,6 +51,14 @@
       <mat-icon>download</mat-icon>
       Export
     </button>
+    <button
+      class="export-btn export-btn--all"
+      *ngIf="!isLoading"
+      (click)="exportAllToExcel()"
+      title="Export all applicants to Excel">
+      <mat-icon>download</mat-icon>
+      Export All
+    </button>
   </div>
 
   <!-- Rejection Action Bar -->
@@ -141,22 +149,22 @@
               <mat-icon *ngIf="sortColumn === 'civil_status' && sortDirection === 'desc'">arrow_downward</mat-icon>
             </span>
           </th>
-          <th class="col-profession sortable" (click)="sortBy('fathers_profession')">
-            Father's Profession
+          <th class="col-sibling sortable" (click)="sortBy('sibling_in_college')">
+            Sibling in College
             <span class="sort-icon">
-                <mat-icon *ngIf="sortColumn !== 'fathers_profession'">unfold_more</mat-icon>
-                <mat-icon *ngIf="sortColumn === 'fathers_profession' && sortDirection === 'asc'">arrow_upward</mat-icon>
-                <mat-icon *ngIf="sortColumn === 'fathers_profession' && sortDirection === 'desc'">arrow_downward</mat-icon>
+              <mat-icon *ngIf="sortColumn !== 'sibling_in_college'">unfold_more</mat-icon>
+              <mat-icon *ngIf="sortColumn === 'sibling_in_college' && sortDirection === 'asc'">arrow_upward</mat-icon>
+              <mat-icon *ngIf="sortColumn === 'sibling_in_college' && sortDirection === 'desc'">arrow_downward</mat-icon>
             </span>
-            </th>
-            <th class="col-profession sortable" (click)="sortBy('mothers_profession')">
-            Mother's Profession
+          </th>
+          <th class="col-sibling sortable" (click)="sortBy('sibling_graduated')">
+            Sibling Graduated
             <span class="sort-icon">
-                <mat-icon *ngIf="sortColumn !== 'mothers_profession'">unfold_more</mat-icon>
-                <mat-icon *ngIf="sortColumn === 'mothers_profession' && sortDirection === 'asc'">arrow_upward</mat-icon>
-                <mat-icon *ngIf="sortColumn === 'mothers_profession' && sortDirection === 'desc'">arrow_downward</mat-icon>
+              <mat-icon *ngIf="sortColumn !== 'sibling_graduated'">unfold_more</mat-icon>
+              <mat-icon *ngIf="sortColumn === 'sibling_graduated' && sortDirection === 'asc'">arrow_upward</mat-icon>
+              <mat-icon *ngIf="sortColumn === 'sibling_graduated' && sortDirection === 'desc'">arrow_downward</mat-icon>
             </span>
-            </th>
+          </th>
           <th class="col-academic sortable" (click)="sortBy('current_academic_status')">Academic Standing
             <span class="sort-icon">
               <mat-icon *ngIf="sortColumn !== 'current_academic_status'">unfold_more</mat-icon>
@@ -216,16 +224,16 @@
             </span>
             <mat-icon class="excl-icon" *ngIf="isCivilStatusExcluded(item.civil_status)" title="Civil status not allowed">warning</mat-icon>
           </td>
-          <td class="col-profession">
-            <span class="profession-tag profession-tag--father">
-                {{ item.fathers_profession || '—' }}
+          <td class="col-sibling">
+            <span class="sibling-tag sibling-tag--college">
+              {{ item.sibling_in_college || '—' }}
             </span>
-            </td>
-            <td class="col-profession">
-            <span class="profession-tag profession-tag--mother">
-                {{ item.mothers_profession || '—' }}
+          </td>
+          <td class="col-sibling">
+            <span class="sibling-tag sibling-tag--graduated">
+              {{ item.sibling_graduated || '—' }}
             </span>
-            </td>
+          </td>
           <td class="col-academic">
             <span class="status-badge" [ngClass]="getAcademicStatusClass(item.current_academic_status)">
               {{ getAcademicLabel(item.current_academic_status) }}

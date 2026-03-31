@@ -57,6 +57,14 @@
       <mat-icon>download</mat-icon>
       Export
     </button>
+    <button
+      class="export-btn export-btn--shs"
+      *ngIf="!isLoading"
+      (click)="exportSHSTopToExcel()"
+      title="Export Top 100 SHS/Graduate of SHS per course">
+      <mat-icon>school</mat-icon>
+      SHS Top 100
+    </button>
 </div>
 
   <!-- Rejection Action Bar -->

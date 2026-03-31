@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ApplicantService } from '../../services/applicant.service';
@@ -29,36 +29,19 @@ import { AssessmentAccessGuard } from '../../services/assessment-access.guard';
   templateUrl: './applicant-edit-dialog.component.html',
   styleUrl: './applicant-edit-dialog.component.css'
 })
-export class ApplicantEditDialogComponent {
+export class ApplicantEditDialogComponent implements OnInit{
 
-  districts = ['First District', 'Second District', 'Third District', 'Fourth District'];
-  municipalities: { [key: string]: string[] } = {
-    'First District': [
-      'Agdangan','Calauag','Catanauan','Dolores','General Luna',
-      'Macalelon','Mulanay','Padre Burgos','Pitogo','Plaridel',
-      'Quezon','Sampaloc','Tayabas City'
-    ],
-    'Second District': [
-      'Alabat','Buenavista','Burdeos','Jomalig','Polillo',
-      'San Andres','San Francisco'
-    ],
-    'Third District': [
-      'Atimonan','Guinayangan','Gumaca','Lopez','San Narciso',
-      'Tagkawayan'
-    ],
-    'Fourth District': [
-      'Candelaria','General Nakar','Infanta','Lucban','Lucena City',
-      'Mauban','Pagbilao','Perez','Sariaya','Tiaong','San Antonio','Unisan'
-    ]
-  };
-
-  filteredMunicipalities: string[] = [];
-  filteredBarangays: string[] = [];
+  districts: { id: number, name: string }[] = [];
+  allMunicipalities: { id: number, district_id: number, name: string, points: number }[] = [];
+  filteredMunicipalities: { id: number, district_id: number, name: string, points: number }[] = [];
 
   editForm: FormGroup;
-  hideSecret = true; 
+  hideSecret = true;
   hasSecretAnswer = true;
-  
+
+  // Track which fields are disabled due to empty data
+  isCurrentCourseEmpty = false;
+
   constructor(
     private fb: FormBuilder,
     public dialogRef: MatDialogRef<ApplicantEditDialogComponent>,
@@ -66,10 +49,14 @@ export class ApplicantEditDialogComponent {
     private applicantService: ApplicantService,
     private loaderService: LoaderService,
     private toast: ToastService,
-    private router: Router, 
+    private router: Router,
     private assessmentAccessGuard: AssessmentAccessGuard
   ) {
-    this.hasSecretAnswer = !!data.secret_answer; 
+    this.hasSecretAnswer = !!data.secret_answer;
+
+    // Check if current_course is empty
+    this.isCurrentCourseEmpty = !data.current_course || data.current_course.trim() === '';
+
     this.editForm = this.fb.group({
       id: [data.id],
       applicant_first: [data.applicant_first, Validators.required],
@@ -83,157 +70,133 @@ export class ApplicantEditDialogComponent {
       gender: [data.gender],
       civil_status: [data.civil_status],
       assigned_sex: [data.assigned_sex],
-      children: [data.children],
+      children: [data.num_children !== undefined ? String(data.num_children) : null],
       contact: [data.contact],
       email: [data.email, [Validators.email]],
       house_no: [data.house_no],
       street: [data.street],
       purok: [data.purok],
       district: [data.district],
-      municipality: [data.municipality],
+      municipality: [data.municipality ? +data.municipality : null],
       barangay: [data.barangay],
       applicant_course: [data.applicant_course],
-      current_academic_status: [data.current_academic_status],
-      current_course: [data.current_course],
+      // current_academic_status: [data.current_academic_status],
+      // Disable current_course if empty
+      current_course: [
+        { value: data.current_course || '', disabled: this.isCurrentCourseEmpty }
+      ],
       current_school: [data.current_school],
-      school_location: [data.school_location],
-      secret_question: [data.secret_question],
-      secret_answer: [''], 
-      picture: [null],
-      gradePDF: [null]
+      // secret_question: [data.secret_question],
+      // secret_answer: [''],
+      // picture: [null],
+      // gradePDF: [null]
     });
   }
 
   ngOnInit() {
-    const district = this.editForm.get('district')?.value;
-    if (district) {
-      this.filteredMunicipalities = this.municipalities[district] || [];
-    }
+  this.applicantService.getDistrictsAndMunicipalities().subscribe({
+    next: (res) => {
+      this.districts = res.districts;
+      this.allMunicipalities = res.municipalities;
 
-    const municipality = this.editForm.get('municipality')?.value;
+      const districtId = this.data.district ? +this.data.district : null;
+      const municipalityId = this.data.municipality ? +this.data.municipality : null;
+
+      this.editForm.patchValue({ district: districtId });
+      this.filteredMunicipalities = this.allMunicipalities.filter(
+        m => m.district_id === districtId
+      );
+
+      setTimeout(() => {
+        this.editForm.patchValue({ municipality: municipalityId });
+      });
+    },
+    error: (err) => {
+      console.error('Failed to load districts/municipalities', err);
+    }
+  });
+}
+
+  onDistrictChange(districtId: number) {
+    this.filteredMunicipalities = this.allMunicipalities.filter(
+      m => m.district_id === +districtId
+    );
+    this.editForm.patchValue({ municipality: null });
   }
 
-  onFileSelected(event: Event) {
-    const input = event.target as HTMLInputElement;
-    if (input.files && input.files.length > 0) {
-      const file = input.files[0];
-      this.editForm.patchValue({ picture: file });
-      this.editForm.get('picture')?.updateValueAndValidity();
-    }
+  onMunicipalityChange(muniId: number) {
+
   }
 
-  onGradeFileSelected(event: Event) {
-    const input = event.target as HTMLInputElement;
-    if (input.files && input.files.length > 0) {
-      const file = input.files[0];
-      this.editForm.patchValue({ grade_pdf: file });
-      this.editForm.get('grade_pdf')?.updateValueAndValidity();
-    }
-  }
+  // onFileSelected(event: Event) {
+  //   const input = event.target as HTMLInputElement;
+  //   if (input.files && input.files.length > 0) {
+  //     this.editForm.patchValue({ picture: input.files[0] });
+  //     this.editForm.get('picture')?.updateValueAndValidity();
+  //   }
+  // }
+
+  // onGradeFileSelected(event: Event) {
+  //   const input = event.target as HTMLInputElement;
+  //   if (input.files && input.files.length > 0) {
+  //     this.editForm.patchValue({ grade_pdf: input.files[0] });
+  //     this.editForm.get('grade_pdf')?.updateValueAndValidity();
+  //   }
+  // }
 
   toggleSecretVisibility() {
     this.hideSecret = !this.hideSecret;
   }
 
-  onDistrictChange(district: string) {
-    this.filteredMunicipalities = this.municipalities[district] || [];
-    this.editForm.patchValue({ municipality: '' });
-  }
+  save() {
+    const formData = new FormData();
+    const rawValues = this.editForm.getRawValue(); 
 
-  onMunicipalityChange(muni: string) {
-    this.editForm.patchValue({ barangay: '' });
-  }
-
-save() {
-  const formData = new FormData();
-  Object.keys(this.editForm.value).forEach(key => {
-    const value = this.editForm.value[key];
-    if (value !== null && value !== undefined) {
-      if (key === 'picture' && value instanceof File) {
-        formData.append('picture', value);
-      } else {
-        formData.append(key, value);
+    Object.keys(rawValues).forEach(key => {
+      const value = rawValues[key];
+      if (value !== null && value !== undefined && value !== '') {
+        if (key === 'picture' && value instanceof File) {
+          formData.append('picture', value);
+        } else {
+          formData.append(key, value);
+        }
       }
-    }
-  });
+    });
 
-  this.loaderService.show();
+    this.loaderService.show();
 
-  this.applicantService.updateApplicant(formData).subscribe({
-    next: (res) => {
-      this.loaderService.hide();
-      this.toast.showSuccess('Application updated successfully!');
-      this.dialogRef.close(true);
+    this.applicantService.updateApplicant(formData).subscribe({
+      next: (res) => {
+        this.loaderService.hide();
+        this.toast.showSuccess('Application updated successfully!');
+        this.dialogRef.close(true);
 
-      const hasRefNo = res.has_ref_no;
-      const hasAssessmentAnswers = res.has_assessment_answers;
-      const applicationRefNo = res.application_ref_no;
+        const hasRefNo = res.has_ref_no;
+        const hasAssessmentAnswers = res.has_assessment_answers;
+        const applicationRefNo = res.application_ref_no;
 
-      // If no ref_no OR no assessment answers yet → go to assessment-form
-      if (!hasRefNo || !hasAssessmentAnswers) {
-        this.assessmentAccessGuard.allowAccessOnce();
-        this.router.navigate(['assessment-form'], {
-          state: {
-            applicationRefNo: applicationRefNo,
-            scholarshipTitle: 'Scholarship Application'
-          }
-        });
-      } else {
-        // Has ref_no AND already has assessment answers → skip to programs
-        this.router.navigate(['apply/programs'], {
-          state: {
-            applicationRefNo: applicationRefNo,
-            scholarshipTitle: 'Scholarship Application'
-          }
-        });
+        if (!hasRefNo || !hasAssessmentAnswers) {
+          this.assessmentAccessGuard.allowAccessOnce();
+          this.router.navigate(['assessment-form'], {
+            state: {
+              applicationRefNo: applicationRefNo,
+              scholarshipTitle: 'Scholarship Application'
+            }
+          });
+        } else {
+          this.router.navigate(['apply/programs'], {
+            state: {
+              applicationRefNo: applicationRefNo,
+              scholarshipTitle: 'Scholarship Application'
+            }
+          });
+        }
+      },
+      error: err => {
+        this.loaderService.hide();
+        console.error('Update failed:', err);
+        this.toast.showError('Failed to update application');
       }
-    },
-    error: err => {
-      this.loaderService.hide();
-      console.error('Update failed:', err);
-      this.toast.showError('Failed to update application');
-    }
-  });
-}  
-
-  // save() {
-  //   const formData = new FormData();
-  //   Object.keys(this.editForm.value).forEach(key => {
-  //     const value = this.editForm.value[key];
-  //     if (value !== null && value !== undefined) {
-  //       if (key === 'picture' && value instanceof File) {
-  //         formData.append('picture', value);
-  //       } else {
-  //         formData.append(key, value);
-  //       }
-  //     }
-  //   });
-
-  //   this.loaderService.show();
-
-  //   this.applicantService.updateApplicant(formData).subscribe({
-  //     next: () => {
-  //       this.loaderService.hide();
-  //       this.toast.showSuccess('Application updated successfully!');
-  //       this.dialogRef.close(true);
-
-  //       this.assessmentAccessGuard.allowAccessOnce();
-
-  //       this.router.navigate(['apply/programs'], {
-  //         state: { 
-  //           applicationRefNo: this.data.application_ref_no,
-  //           scholarshipTitle: 'Scholarship Application'
-  //         }
-  //       });
-  //     },
-  //     error: err => {
-  //       this.loaderService.hide();
-  //       console.error('Update failed:', err);
-  //       this.toast.showError('Failed to update application ');
-  //     }
-  //   });
-  // }
-
-
-
+    });
+  }
 }

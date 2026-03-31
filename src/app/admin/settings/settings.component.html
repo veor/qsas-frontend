@@ -75,6 +75,26 @@
                   <mat-icon matSuffix>phone</mat-icon>
                   <mat-error *ngIf="userForm.get('phone')?.hasError('pattern')">Please enter a valid phone number</mat-error>
                 </mat-form-field>
+
+                <!-- District -->
+                <mat-form-field appearance="outline" class="form-field">
+                  <mat-label>District</mat-label>
+                  <mat-select formControlName="district" (selectionChange)="onUserDistrictChange($event.value)">
+                    <mat-option [value]="null">-- Select District --</mat-option>
+                    <mat-option *ngFor="let d of districts" [value]="d.id">{{ d.name }}</mat-option>
+                  </mat-select>
+                </mat-form-field>
+
+                <!-- Municipality -->
+                <mat-form-field appearance="outline" class="form-field">
+                  <mat-label>Municipality</mat-label>
+                  <mat-select formControlName="municipality">
+                    <mat-option [value]="null">-- Select Municipality --</mat-option>
+                    <mat-option *ngFor="let m of filteredMunicipalitiesForUser" [value]="m.id">{{ m.name }}</mat-option>
+                  </mat-select>
+                  <mat-hint *ngIf="!userForm.get('district')?.value">Select a district first</mat-hint>
+                </mat-form-field>
+                
                 <div class="form-section">
                   <h3 class="section-title">
                     <mat-icon>image</mat-icon>

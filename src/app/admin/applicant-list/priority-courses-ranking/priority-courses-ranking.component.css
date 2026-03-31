@@ -823,6 +823,16 @@ th.sortable:has(.sort-icon mat-icon:not([ng-reflect-ng-if="false"])) .sort-icon 
   height: 16px;
 }
 
+.export-btn--shs {
+  background-color: #e3f2fd;
+  color: #1565c0;
+  border-color: #90caf9;
+}
+
+.export-btn--shs:hover {
+  background-color: #bbdefb;
+}
+
 /* ── Responsive ── */
 @media (max-width: 768px) {
   .page-header {

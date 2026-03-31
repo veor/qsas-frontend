@@ -202,40 +202,88 @@ export class StanCRankingComponent implements OnInit {
 
   // --- Export ---
   exportToExcel(): void {
-    const exportData = this.filteredData.map((item, index) => ({
-      '#':                   index + 1,
-      'Name':                item.name || '—',
-      'Municipality':        item.municipality || '—',
-      'Score':               item.assessment_weight !== null
-        ? parseFloat(item.assessment_weight).toFixed(2)
-        : '—',
-      'Age':                 item.age ?? '—',
-      'Civil Status':        item.civil_status || '—',
-      "Father's Profession": item.fathers_profession || '—',
-      "Mother's Profession": item.mothers_profession || '—',
-      'Academic Standing':   this.getAcademicLabel(item.current_academic_status),
-      'Criteria Status':     this.isExcluded(item) ? 'Excluded' : 'Qualified',
-    }));
+      const exportData = this.filteredData.map((item, index) => ({
+        '#':                          index + 1,
+        'Name':                       item.name || '—',
+        'Municipality':               item.municipality || '—',
+        'Score':                      item.assessment_weight !== null
+          ? parseFloat(item.assessment_weight).toFixed(2)
+          : '—',
+        'Age':                        item.age ?? '—',
+        'Civil Status':               item.civil_status || '—',
+        'Sibling Currently in College':    item.sibling_in_college || '—',
+        'Sibling Graduated from College':  item.sibling_graduated || '—',
+        'Academic Standing':          this.getAcademicLabel(item.current_academic_status),
+        'Criteria Status':            this.isExcluded(item) ? 'Excluded' : 'Qualified',
+      }));
+  
+      const worksheet = XLSX.utils.json_to_sheet(exportData);
+      worksheet['!cols'] = [
+        { wch: 5  },
+        { wch: 30 },
+        { wch: 20 },
+        { wch: 10 },
+        { wch: 8  },
+        { wch: 15 },
+        { wch: 30 },
+        { wch: 30 },
+        { wch: 45 },
+        { wch: 16 },
+      ];
+  
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'STAN C Ranking');
+  
+      const timestamp = new Date().toISOString().slice(0, 10);
+      XLSX.writeFile(workbook, `stan-c-ranking-${timestamp}.xlsx`);
+    }
 
-    const worksheet = XLSX.utils.json_to_sheet(exportData);
-    worksheet['!cols'] = [
-      { wch: 5  },
-      { wch: 30 },
-      { wch: 20 },
-      { wch: 10 },
-      { wch: 8  },
-      { wch: 15 },
-      { wch: 25 },
-      { wch: 25 },
-      { wch: 45 },
-      { wch: 16 },
-    ];
-
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'STAN C');
-
-    const timestamp = new Date().toISOString().slice(0, 10);
-    XLSX.writeFile(workbook, `stan-c-ranking-${timestamp}.xlsx`);
+  exportAllToExcel(): void {
+    this.adminService.exportSTANCAll().subscribe({
+      next: (data) => {
+        const exportData = data.map((item, index) => ({
+          '#':                              index + 1,
+          'Application Ref No':            item.application_ref_no,
+          'Score':                         item.assessment_weight !== null
+                                             ? parseFloat(item.assessment_weight).toFixed(2)
+                                             : '—',
+          'Name':                          item.name || '—',
+          'Age':                           item.age ?? '—',
+          'Civil Status':                  item.civil_status || '—',
+          'Sibling Currently in College':  item.sibling_in_college || '—',
+          'Sibling Graduated from College':item.sibling_graduated || '—',
+          'Academic Standing':             this.getAcademicLabel(item.current_academic_status),
+          'Contact No':                    item.contact || '—',
+          'Email':                         item.email || '—',
+          'Municipality':                  item.municipality || '—',
+        }));
+  
+        const worksheet = XLSX.utils.json_to_sheet(exportData);
+        worksheet['!cols'] = [
+          { wch: 5  },  // #
+          { wch: 20 },  // Application Ref No
+          { wch: 10 },  // Score
+          { wch: 30 },  // Name
+          { wch: 8  },  // Age
+          { wch: 15 },  // Civil Status
+          { wch: 30 },  // Sibling in College
+          { wch: 30 },  // Sibling Graduated
+          { wch: 35 },  // Academic Standing
+          { wch: 15 },  // Contact No
+          { wch: 25 },  // Email
+          { wch: 20 },  // Municipality
+        ];
+  
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, 'STAN C All');
+  
+        const timestamp = new Date().toISOString().slice(0, 10);
+        XLSX.writeFile(workbook, `stan-c-all-${timestamp}.xlsx`);
+      },
+      error: () => {
+        console.error('Export failed');
+      }
+    });
   }
 
   goBack(): void {
